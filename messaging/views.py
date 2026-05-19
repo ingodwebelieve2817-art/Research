@@ -1,7 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from services.models import ServiceProvider
 from .models import Outreach
+
+
+@login_required
+def campaign_list(request):
+    return render(request, "messaging/campaign_list.html", {"campaigns": []})
+
+
+@login_required
+def campaign_create(request):
+    return render(request, "messaging/campaign_form.html", {"form": None, "customer_count": 0})
+
+
+@login_required
+def campaign_detail(request, pk):
+    return render(request, "messaging/campaign_detail.html", {"campaign": None, "logs": []})
+
+
+@login_required
+def campaign_send(request, pk):
+    return render(request, "messaging/campaign_confirm_send.html", {"campaign": None})
 
 
 @login_required

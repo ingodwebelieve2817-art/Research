@@ -55,6 +55,40 @@ def setup(request):
 
 
 @login_required
+def provider_setup(request):
+    return redirect("services:setup")
+
+
+@login_required
+def customer_list(request):
+    return render(request, "services/customer_list.html", {
+        "customers": [],
+        "customer_count": 0,
+        "customer_limit": 0,
+    })
+
+
+@login_required
+def customer_add(request):
+    return render(request, "services/customer_form.html", {"form": None, "customer": None})
+
+
+@login_required
+def customer_edit(request, pk):
+    return render(request, "services/customer_form.html", {"form": None, "customer": None})
+
+
+@login_required
+def service_manage(request):
+    return render(request, "services/service_manage.html", {"services": []})
+
+
+@login_required
+def service_add(request):
+    return render(request, "services/service_form.html", {"form": None})
+
+
+@login_required
 def dashboard(request):
     try:
         provider = request.user.provider_profile
