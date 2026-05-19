@@ -1,8 +1,36 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import ServiceProvider
+from .models import ServiceProvider, SERVICE_CATEGORIES
 from .forms import ServiceProviderForm
+
+
+def provider_list(request):
+    category = request.GET.get("category", "")
+    city = request.GET.get("city", "").strip()
+
+    providers = ServiceProvider.objects.filter(is_active=True)
+    if category:
+        providers = providers.filter(category=category)
+    if city:
+        providers = providers.filter(city__icontains=city)
+
+    return render(request, "services/provider_list.html", {
+        "providers": providers,
+        "categories": SERVICE_CATEGORIES,
+        "category": category,
+        "city": city,
+    })
+
+
+def provider_detail(request, pk):
+    provider = get_object_or_404(ServiceProvider, pk=pk, is_active=True)
+    return render(request, "services/provider_detail.html", {
+        "provider": provider,
+        "services": [],
+        "reviews": [],
+        "avg_rating": None,
+    })
 
 
 @login_required
