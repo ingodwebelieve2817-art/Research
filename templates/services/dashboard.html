@@ -3,71 +3,80 @@
 {% block content %}
 <div class="container-fluid py-4">
   <div class="row">
+
     <!-- Sidebar -->
     <div class="col-md-2 sidebar py-4 px-3">
-      <div class="text-white fw-bold mb-4 px-2">{{ provider.business_name }}</div>
+      <div class="text-white fw-bold mb-4 px-2 small">{{ provider.business_name }}</div>
       <a href="{% url 'services:dashboard' %}" class="active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-      <a href="{% url 'services:customer_list' %}"><i class="bi bi-people me-2"></i>Customers</a>
-      <a href="{% url 'services:service_manage' %}"><i class="bi bi-briefcase me-2"></i>Services</a>
-      <a href="{% url 'messaging:campaign_list' %}"><i class="bi bi-megaphone me-2"></i>Campaigns</a>
-      <a href="{% url 'subscriptions:my_subscription' %}"><i class="bi bi-credit-card me-2"></i>Subscription</a>
-      <a href="{% url 'services:provider_setup' %}"><i class="bi bi-pencil-square me-2"></i>Edit Profile</a>
+      <a href="{% url 'messaging:outreach_list' %}"><i class="bi bi-megaphone me-2"></i>Outreach History</a>
+      <a href="{% url 'subscriptions:my_subscription' %}"><i class="bi bi-credit-card me-2"></i>My Plan</a>
+      <a href="{% url 'services:setup' %}"><i class="bi bi-pencil-square me-2"></i>Edit Profile</a>
       <hr class="border-secondary"/>
       <a href="{% url 'accounts:logout' %}" class="text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
     </div>
 
     <!-- Main content -->
     <div class="col-md-10 py-4 px-4">
-      <h3 class="fw-bold mb-4">Welcome back, {{ request.user.username }}!</h3>
+      <h3 class="fw-bold mb-1">Welcome, {{ request.user.username }}!</h3>
+      <p class="text-muted mb-4">{{ provider.business_name }} &mdash; {{ provider.get_category_display }} in {{ provider.city }}</p>
 
-      <!-- Subscription alert -->
+      <!-- Subscription status -->
       {% if not subscription %}
-      <div class="alert alert-warning d-flex align-items-center gap-3">
+      <div class="alert alert-warning d-flex align-items-center gap-3 mb-4">
         <i class="bi bi-exclamation-triangle-fill fs-4"></i>
-        <div>You're on the <strong>Basic (Free)</strong> plan — up to 5 customers.
-          <a href="{% url 'subscriptions:plans' %}" class="alert-link ms-1">Upgrade now</a> to reach more.</div>
+        <div>
+          You have <strong>no active plan</strong>. Pick a plan so we can start
+          reaching out to customers on your behalf.
+          <a href="{% url 'subscriptions:plans' %}" class="alert-link ms-2">Choose a Plan &rarr;</a>
+        </div>
       </div>
-      {% elif subscription.is_expired %}
-      <div class="alert alert-danger">Your <strong>{{ subscription.plan.name }}</strong> plan has expired.
-        <a href="{% url 'subscriptions:plans' %}" class="alert-link">Renew</a></div>
       {% else %}
-      <div class="alert alert-success d-flex align-items-center gap-3">
+      <div class="alert alert-success d-flex align-items-center gap-3 mb-4">
         <i class="bi bi-check-circle-fill fs-4"></i>
-        <div><strong>{{ subscription.plan.name }}</strong> plan active
-          {% if subscription.days_remaining is not None %} · {{ subscription.days_remaining }} days remaining{% endif %}
-          <a href="{% url 'subscriptions:my_subscription' %}" class="alert-link ms-2">Manage</a>
+        <div>
+          <strong>{{ subscription.plan.name }} Plan</strong> is active.
+          We will reach up to <strong>{{ subscription.plan.reach_limit }} customers</strong>
+          in {{ provider.city }} who need {{ provider.get_category_display }} services.
+          {% if subscription.days_remaining is not None %}
+            <span class="text-muted ms-2">({{ subscription.days_remaining }} days left)</span>
+          {% endif %}
+          <a href="{% url 'subscriptions:my_subscription' %}" class="alert-link ms-2">Manage &rarr;</a>
         </div>
       </div>
       {% endif %}
 
-      <!-- Stats row -->
+      <!-- Stats cards -->
       <div class="row g-3 mb-5">
         <div class="col-sm-6 col-xl-3">
           <div class="card stat-card primary border-0 shadow-sm p-3">
-            <div class="text-muted small">Customers</div>
-            <div class="display-6 fw-bold">{{ customer_count }}</div>
-            <div class="text-muted small">of {{ customer_limit }} allowed</div>
-            <div class="progress mt-2" style="height:4px">
-              <div class="progress-bar" style="width:{% widthratio customer_count customer_limit 100 %}%"></div>
-            </div>
+            <div class="text-muted small">Customers in Your City</div>
+            <div class="display-6 fw-bold">{{ matched_customers }}</div>
+            <div class="text-muted small">matching {{ provider.get_category_display }} in {{ provider.city }}</div>
           </div>
         </div>
         <div class="col-sm-6 col-xl-3">
           <div class="card stat-card success border-0 shadow-sm p-3">
-            <div class="text-muted small">Campaigns Sent</div>
-            <div class="display-6 fw-bold">{{ provider.campaigns.count }}</div>
+            <div class="text-muted small">Your Plan Reach</div>
+            <div class="display-6 fw-bold">{{ subscription.plan.reach_limit|default:"—" }}</div>
+            <div class="text-muted small">customers we will contact</div>
           </div>
         </div>
         <div class="col-sm-6 col-xl-3">
           <div class="card stat-card warning border-0 shadow-sm p-3">
-            <div class="text-muted small">Services Listed</div>
-            <div class="display-6 fw-bold">{{ provider.offered_services.count }}</div>
+            <div class="text-muted small">Total Outreaches Run</div>
+            <div class="display-6 fw-bold">{{ provider.outreaches.count }}</div>
           </div>
         </div>
         <div class="col-sm-6 col-xl-3">
           <div class="card stat-card danger border-0 shadow-sm p-3">
-            <div class="text-muted small">Reviews</div>
-            <div class="display-6 fw-bold">{{ provider.reviews.count }}</div>
+            <div class="text-muted small">Messages Sent (All Time)</div>
+            <div class="display-6 fw-bold">
+              {% with total=0 %}
+                {% for o in provider.outreaches.all %}{% endfor %}
+                {{ provider.outreaches.all|length }}
+              {% endwith %}
+              —
+            </div>
           </div>
         </div>
       </div>
@@ -75,77 +84,63 @@
       <!-- Quick actions -->
       <div class="row g-3 mb-5">
         <div class="col-md-4">
-          <a href="{% url 'services:customer_add' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
-            <i class="bi bi-person-plus fs-2 text-primary mb-2"></i>
-            <h5 class="fw-bold">Add Customer</h5>
-            <p class="text-muted small mb-0">Register a new customer to your list</p>
-          </a>
-        </div>
-        <div class="col-md-4">
-          <a href="{% url 'messaging:campaign_create' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
-            <i class="bi bi-megaphone fs-2 text-success mb-2"></i>
-            <h5 class="fw-bold">Send Campaign</h5>
-            <p class="text-muted small mb-0">Broadcast a message on WhatsApp or Facebook</p>
-          </a>
-        </div>
-        <div class="col-md-4">
           <a href="{% url 'subscriptions:plans' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
-            <i class="bi bi-arrow-up-circle fs-2 text-warning mb-2"></i>
+            <i class="bi bi-arrow-up-circle fs-2 text-primary mb-2"></i>
             <h5 class="fw-bold">Upgrade Plan</h5>
-            <p class="text-muted small mb-0">Reach more customers with Pro or Max</p>
+            <p class="text-muted small mb-0">Reach more customers by upgrading your plan</p>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'messaging:outreach_list' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
+            <i class="bi bi-megaphone fs-2 text-success mb-2"></i>
+            <h5 class="fw-bold">Outreach History</h5>
+            <p class="text-muted small mb-0">See who we've contacted on your behalf</p>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'services:setup' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
+            <i class="bi bi-pencil-square fs-2 text-warning mb-2"></i>
+            <h5 class="fw-bold">Edit Profile</h5>
+            <p class="text-muted small mb-0">Update your business details and contact info</p>
           </a>
         </div>
       </div>
 
-      <!-- Recent customers -->
-      <h5 class="fw-bold mb-3">Recent Customers</h5>
+      <!-- Recent outreaches -->
+      <h5 class="fw-bold mb-3">Recent Outreaches</h5>
       <div class="table-responsive">
         <table class="table table-hover align-middle">
           <thead class="table-light">
-            <tr><th>Name</th><th>Phone</th><th>WhatsApp</th><th>Facebook</th><th>Added</th></tr>
+            <tr><th>Date</th><th>Channel</th><th>Status</th><th>Matched</th><th>Sent</th><th>Failed</th><th></th></tr>
           </thead>
           <tbody>
-            {% for c in customers %}
+            {% for o in recent_outreaches %}
             <tr>
-              <td>{{ c.name }}</td>
-              <td>{{ c.phone }}</td>
-              <td>{% if c.opted_in_whatsapp %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}—{% endif %}</td>
-              <td>{% if c.opted_in_facebook %}<i class="bi bi-check-circle-fill text-primary"></i>{% else %}—{% endif %}</td>
-              <td class="text-muted small">{{ c.created_at|date:"M j" }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" class="text-center text-muted">No customers yet. <a href="{% url 'services:customer_add' %}">Add one.</a></td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% if customer_count > 10 %}<a href="{% url 'services:customer_list' %}" class="btn btn-outline-secondary btn-sm">View all {{ customer_count }} customers</a>{% endif %}
-
-      <!-- Recent campaigns -->
-      <h5 class="fw-bold mt-5 mb-3">Recent Campaigns</h5>
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
-            <tr><th>Campaign</th><th>Channel</th><th>Status</th><th>Sent</th><th>Date</th></tr>
-          </thead>
-          <tbody>
-            {% for c in recent_campaigns %}
-            <tr>
-              <td><a href="{% url 'messaging:campaign_detail' c.pk %}">{{ c.title }}</a></td>
-              <td>{{ c.get_channel_display }}</td>
+              <td class="text-muted small">{{ o.created_at|date:"M j, Y H:i" }}</td>
+              <td>{{ o.get_channel_display }}</td>
               <td>
-                <span class="badge {% if c.status == 'sent' %}bg-success{% elif c.status == 'failed' %}bg-danger{% elif c.status == 'sending' %}bg-warning{% else %}bg-secondary{% endif %}">{{ c.status }}</span>
+                <span class="badge {% if o.status == 'done' %}bg-success{% elif o.status == 'failed' %}bg-danger{% elif o.status == 'running' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                  {{ o.get_status_display }}
+                </span>
               </td>
-              <td>{{ c.sent_count }}/{{ c.total_recipients }}</td>
-              <td class="text-muted small">{{ c.created_at|date:"M j" }}</td>
+              <td>{{ o.total_matched }}</td>
+              <td class="text-success fw-semibold">{{ o.total_sent }}</td>
+              <td class="text-danger">{{ o.total_failed }}</td>
+              <td><a href="{% url 'messaging:outreach_detail' o.pk %}" class="btn btn-sm btn-outline-secondary">Details</a></td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" class="text-center text-muted">No campaigns yet. <a href="{% url 'messaging:campaign_create' %}">Create one.</a></td></tr>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                No outreaches yet.
+                {% if not subscription %}<a href="{% url 'subscriptions:plans' %}">Subscribe to a plan to start.</a>{% endif %}
+              </td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
+
   </div>
 </div>
 {% endblock %}

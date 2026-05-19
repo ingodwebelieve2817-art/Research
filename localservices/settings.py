@@ -7,9 +7,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-me-in-production")
-
 DEBUG = os.getenv("DEBUG", "True") == "True"
-
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 INSTALLED_APPS = [
@@ -22,6 +20,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "services",
+    "customers",       # platform's own customer dataset
     "subscriptions",
     "messaging",
 ]
@@ -93,7 +92,7 @@ LOGOUT_REDIRECT_URL = "/"
 CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
-# WhatsApp Business API (Meta Cloud API)
+# WhatsApp Business Cloud API (Meta)
 WHATSAPP_API_TOKEN = os.getenv("WHATSAPP_API_TOKEN", "")
 WHATSAPP_PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID", "")
 WHATSAPP_BUSINESS_ACCOUNT_ID = os.getenv("WHATSAPP_BUSINESS_ACCOUNT_ID", "")
@@ -103,15 +102,9 @@ FACEBOOK_APP_ID = os.getenv("FACEBOOK_APP_ID", "")
 FACEBOOK_APP_SECRET = os.getenv("FACEBOOK_APP_SECRET", "")
 FACEBOOK_PAGE_ACCESS_TOKEN = os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN", "")
 
-# Subscription plan limits
-PLAN_CUSTOMER_LIMITS = {
+# How many customers the platform reaches out to per plan
+PLAN_REACH_LIMITS = {
     "basic": 5,
     "pro": 100,
     "max": 10000,
-}
-
-PLAN_PRICES_USD = {
-    "basic": 0,
-    "pro": 19,
-    "max": 99,
 }

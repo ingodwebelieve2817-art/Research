@@ -4,8 +4,7 @@ from .models import SubscriptionPlan, Subscription, Payment
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
-    list_display = ("name", "tier", "price_monthly", "customer_limit",
-                    "whatsapp_enabled", "facebook_enabled", "bulk_messaging")
+    list_display = ("name", "tier", "price_monthly", "reach_limit", "whatsapp_enabled", "facebook_enabled")
 
 
 class PaymentInline(admin.TabularInline):
@@ -17,7 +16,7 @@ class PaymentInline(admin.TabularInline):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ("provider", "plan", "status", "started_at", "expires_at", "is_active")
-    list_filter = ("status", "is_active", "plan")
+    list_filter = ("status", "plan")
     inlines = [PaymentInline]
 
 

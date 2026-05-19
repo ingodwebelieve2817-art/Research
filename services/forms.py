@@ -1,32 +1,27 @@
 from django import forms
-from .models import ServiceProvider, ProviderService, CustomerProfile
+from .models import ServiceProvider
 
 
 class ServiceProviderForm(forms.ModelForm):
     class Meta:
         model = ServiceProvider
         fields = [
-            "business_name", "category", "description",
-            "logo", "cover_image",
-            "address", "city", "state", "country",
-            "whatsapp_number", "website",
+            "business_name",
+            "category",
+            "description",
+            "logo",
+            "city",
+            "address",
+            "state",
+            "country",
+            "whatsapp_number",
+            "facebook_page_url",
+            "website",
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
         }
-
-
-class ProviderServiceForm(forms.ModelForm):
-    class Meta:
-        model = ProviderService
-        fields = ["title", "description", "price", "price_unit", "image", "is_active"]
-        widgets = {
-            "description": forms.Textarea(attrs={"rows": 3}),
+        help_texts = {
+            "whatsapp_number": "Include country code e.g. +2348012345678",
+            "city": "Must match the city names in the customer dataset for correct matching",
         }
-
-
-class CustomerProfileForm(forms.ModelForm):
-    class Meta:
-        model = CustomerProfile
-        fields = ["name", "phone", "email", "whatsapp_number", "notes",
-                  "opted_in_whatsapp", "opted_in_facebook"]

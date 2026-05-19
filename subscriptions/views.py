@@ -18,8 +18,10 @@ def subscribe(request, plan_id):
     plan = get_object_or_404(SubscriptionPlan, pk=plan_id)
 
     if request.method == "POST":
-        # Deactivate previous subscriptions
-        provider.subscriptions.filter(is_active=True).update(is_active=False, status=Subscription.STATUS_CANCELLED)
+        # Cancel any existing active subscriptions
+        provider.subscriptions.filter(is_active=True).update(
+            is_active=False, status=Subscription.STATUS_CANCELLED
+        )
 
         subscription = Subscription.objects.create(
             provider=provider,
@@ -38,10 +40,16 @@ def subscribe(request, plan_id):
                 status=Payment.STATUS_PENDING,
                 gateway="stripe",
             )
-            messages.info(request, f"Subscribed to {plan.name}. Complete payment to activate features.")
-        else:
-            messages.success(request, f"You are now on the {plan.name} plan!")
 
+        # Automatically trigger outreach to matching customers
+        from messaging.tasks import trigger_outreach
+        trigger_outreach.delay(provider.pk)
+
+        messages.success(
+            request,
+            f"Subscribed to {plan.name}! We are now reaching out to up to "
+            f"{plan.reach_limit} customers in {provider.city} who need {provider.get_category_display()} services."
+        )
         return redirect("services:dashboard")
 
     return render(request, "subscriptions/confirm.html", {"plan": plan, "provider": provider})
@@ -50,10 +58,8 @@ def subscribe(request, plan_id):
 @login_required
 def my_subscription(request):
     provider = get_object_or_404(ServiceProvider, user=request.user)
-    subscription = provider.current_subscription
-    payments = []
-    if subscription:
-        payments = subscription.payments.order_by("-created_at")
+    subscription = provider.active_subscription
+    payments = subscription.payments.order_by("-created_at") if subscription else []
     return render(request, "subscriptions/my_subscription.html", {
         "provider": provider,
         "subscription": subscription,

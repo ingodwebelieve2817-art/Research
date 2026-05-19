@@ -3,55 +3,60 @@
 {% block content %}
 <div class="container py-5">
   <div class="text-center mb-5">
-    <h1 class="fw-bold">Simple, Transparent Pricing</h1>
-    <p class="text-muted lead">Start free. Upgrade as your business grows.</p>
+    <h1 class="fw-bold">Pick Your Reach</h1>
+    <p class="lead text-muted">We find customers in your city who need your service and contact them for you.</p>
   </div>
+
   <div class="row g-4 justify-content-center">
     {% for plan in plans %}
     <div class="col-md-4">
-      <div class="card plan-card h-100 border-0 shadow {% if plan.tier == 'pro' %}border-primary border-2{% endif %} p-4">
+      <div class="card h-100 border-0 shadow {% if plan.tier == 'pro' %}border-primary border-2{% endif %} p-4">
         {% if plan.tier == 'pro' %}<div class="badge bg-primary mb-2">Most Popular</div>{% endif %}
         <h3 class="fw-bold">{{ plan.name }}</h3>
         <div class="display-4 fw-bold my-3">
-          {% if plan.price_monthly == 0 %}Free{% else %}${{ plan.price_monthly }}<span class="fs-5 fw-normal text-muted">/mo</span>{% endif %}
+          {% if plan.price_monthly == 0 %}Free
+          {% else %}${{ plan.price_monthly }}<span class="fs-5 fw-normal text-muted">/mo</span>
+          {% endif %}
         </div>
+
         <ul class="list-unstyled mb-4">
-          <li class="mb-2"><i class="bi bi-people-fill text-primary me-2"></i>Up to <strong>{{ plan.customer_limit|floatformat:0 }} customers</strong></li>
-          <li class="mb-2">
-            <i class="bi bi-whatsapp {% if plan.whatsapp_enabled %}text-success{% else %}text-muted{% endif %} me-2"></i>
-            WhatsApp Messaging {% if not plan.whatsapp_enabled %}<span class="text-muted">(not included)</span>{% endif %}
+          <li class="mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-people-fill text-primary fs-5"></i>
+            <span>We reach <strong>{{ plan.reach_limit }} customers</strong> for you</span>
           </li>
-          <li class="mb-2">
-            <i class="bi bi-facebook {% if plan.facebook_enabled %}text-primary{% else %}text-muted{% endif %} me-2"></i>
-            Facebook Marketplace {% if not plan.facebook_enabled %}<span class="text-muted">(not included)</span>{% endif %}
+          <li class="mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-whatsapp {% if plan.whatsapp_enabled %}text-success{% else %}text-muted{% endif %} fs-5"></i>
+            <span class="{% if not plan.whatsapp_enabled %}text-muted{% endif %}">
+              WhatsApp outreach {% if not plan.whatsapp_enabled %}(not included){% endif %}
+            </span>
           </li>
-          <li class="mb-2">
-            <i class="bi bi-megaphone {% if plan.bulk_messaging %}text-warning{% else %}text-muted{% endif %} me-2"></i>
-            Bulk Campaigns {% if not plan.bulk_messaging %}<span class="text-muted">(not included)</span>{% endif %}
-          </li>
-          <li class="mb-2">
-            <i class="bi bi-bar-chart {% if plan.analytics_enabled %}text-info{% else %}text-muted{% endif %} me-2"></i>
-            Analytics {% if not plan.analytics_enabled %}<span class="text-muted">(not included)</span>{% endif %}
-          </li>
-          <li class="mb-2">
-            <i class="bi bi-star {% if plan.priority_listing %}text-warning{% else %}text-muted{% endif %} me-2"></i>
-            Priority Listing {% if not plan.priority_listing %}<span class="text-muted">(not included)</span>{% endif %}
+          <li class="mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-facebook {% if plan.facebook_enabled %}text-primary{% else %}text-muted{% endif %} fs-5"></i>
+            <span class="{% if not plan.facebook_enabled %}text-muted{% endif %}">
+              Facebook outreach {% if not plan.facebook_enabled %}(not included){% endif %}
+            </span>
           </li>
         </ul>
-        {% if user.is_authenticated and user.is_provider %}
-        <a href="{% url 'subscriptions:subscribe' plan.pk %}" class="btn {% if plan.tier == 'pro' %}btn-primary{% elif plan.tier == 'max' %}btn-warning{% else %}btn-outline-secondary{% endif %} w-100">
-          {% if plan.price_monthly == 0 %}Get Started Free{% else %}Subscribe – ${{ plan.price_monthly }}/mo{% endif %}
-        </a>
+
+        <p class="text-muted small mb-4">{{ plan.description }}</p>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'subscriptions:subscribe' plan.pk %}"
+             class="btn {% if plan.tier == 'pro' %}btn-primary{% elif plan.tier == 'max' %}btn-warning{% else %}btn-outline-secondary{% endif %} w-100">
+            {% if plan.price_monthly == 0 %}Start Free{% else %}Subscribe — ${{ plan.price_monthly }}/mo{% endif %}
+          </a>
         {% else %}
-        <a href="{% url 'accounts:register_provider' %}" class="btn btn-outline-primary w-100">Register to Subscribe</a>
+          <a href="{% url 'accounts:register' %}"
+             class="btn btn-outline-primary w-100">Register to Subscribe</a>
         {% endif %}
       </div>
     </div>
     {% endfor %}
   </div>
 
-  <div class="text-center mt-5 text-muted small">
-    <p>All plans include a 30-day billing cycle. Cancel anytime. WhatsApp & Facebook integrations require your own Meta developer credentials.</p>
-  </div>
+  <p class="text-center text-muted small mt-5">
+    Outreach starts automatically after subscribing. WhatsApp and Facebook require
+    your Meta developer credentials to be configured in the platform settings.
+  </p>
 </div>
 {% endblock %}

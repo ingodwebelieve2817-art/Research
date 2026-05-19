@@ -14,7 +14,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home, name="home"),
     path("accounts/", include("accounts.urls", namespace="accounts")),
-    path("providers/", include("services.urls", namespace="services")),
+    path("dashboard/", include("services.urls", namespace="services")),
     path("subscriptions/", include("subscriptions.urls", namespace="subscriptions")),
-    path("messaging/", include("messaging.urls", namespace="messaging")),
+    path("outreach/", include("messaging.urls", namespace="messaging")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
