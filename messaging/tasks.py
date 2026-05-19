@@ -69,10 +69,9 @@ def trigger_outreach(self, provider_id: int):
     else:
         channel = Outreach.CHANNEL_WHATSAPP
 
-    # Find customers from the platform dataset that match this provider
+    # Find customers in the same city as the provider
     matched_customers = Customer.objects.filter(
         city__iexact=provider.city,
-        service_interest=provider.category,
         is_active=True,
         opted_in_whatsapp=True,
     )[:reach_limit]

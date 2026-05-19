@@ -41,7 +41,6 @@ def dashboard(request):
     from customers.models import Customer
     matched_customers = Customer.objects.filter(
         city__iexact=provider.city,
-        service_interest=provider.category,
         is_active=True,
     ).count()
 

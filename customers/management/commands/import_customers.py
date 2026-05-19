@@ -1,15 +1,14 @@
 """
 HOW TO USE THIS COMMAND
 ───────────────────────
-When you are ready to add your customer dataset, prepare a CSV file with
-these columns (the header row must match exactly):
+Prepare a CSV file with these columns (header row must match exactly):
 
-    name, phone, whatsapp_number, city, service_interest
+    name, phone, whatsapp_number, city
 
 Example rows:
-    Emeka Obi,+2348012345678,+2348012345678,Lagos,plumber
-    Aisha Musa,+2347031234567,,Abuja,barber
-    Chidi Nwosu,+2348098765432,,Kano,electrician
+    Emeka Obi,+2348012345678,+2348012345678,Lagos
+    Aisha Musa,+2347031234567,,Abuja
+    Chidi Nwosu,+2348098765432,,Kano
 
 whatsapp_number can be left blank — the phone column will be used instead.
 
@@ -22,9 +21,7 @@ Options:
 """
 import csv
 from django.core.management.base import BaseCommand, CommandError
-from customers.models import Customer, SERVICE_INTEREST_CHOICES
-
-VALID_INTERESTS = {slug for slug, _ in SERVICE_INTEREST_CHOICES}
+from customers.models import Customer
 
 
 class Command(BaseCommand):
@@ -48,50 +45,38 @@ class Command(BaseCommand):
             deleted, _ = Customer.objects.all().delete()
             self.stdout.write(self.style.WARNING(f"Cleared {deleted} existing customers."))
 
-        created = skipped = errors = 0
+        created = updated = errors = 0
 
         with file:
             reader = csv.DictReader(file)
-            for i, row in enumerate(reader, start=2):  # start=2 because row 1 is header
+            for i, row in enumerate(reader, start=2):
                 name = row.get("name", "").strip()
                 phone = row.get("phone", "").strip()
                 whatsapp = row.get("whatsapp_number", "").strip()
                 city = row.get("city", "").strip()
-                interest = row.get("service_interest", "").strip().lower()
 
-                # Basic validation
-                if not all([name, phone, city, interest]):
-                    self.stdout.write(self.style.ERROR(f"  Row {i}: missing field — skipped: {row}"))
-                    errors += 1
-                    continue
-
-                if interest not in VALID_INTERESTS:
-                    self.stdout.write(
-                        self.style.ERROR(f"  Row {i}: unknown service_interest '{interest}' — skipped")
-                    )
+                if not all([name, phone, city]):
+                    self.stdout.write(self.style.ERROR(
+                        f"  Row {i}: missing name/phone/city — skipped: {row}"
+                    ))
                     errors += 1
                     continue
 
                 if dry_run:
-                    self.stdout.write(f"  [DRY RUN] Would import: {name} | {phone} | {city} | {interest}")
+                    self.stdout.write(f"  [DRY RUN] Would import: {name} | {phone} | {city}")
                     created += 1
                     continue
 
                 _, was_created = Customer.objects.update_or_create(
                     phone=phone,
-                    defaults={
-                        "name": name,
-                        "whatsapp_number": whatsapp,
-                        "city": city,
-                        "service_interest": interest,
-                    },
+                    defaults={"name": name, "whatsapp_number": whatsapp, "city": city},
                 )
                 if was_created:
                     created += 1
                 else:
-                    skipped += 1
+                    updated += 1
 
         label = "Would import" if dry_run else "Imported"
         self.stdout.write(self.style.SUCCESS(
-            f"\nDone. {label}: {created} | Updated/skipped: {skipped} | Errors: {errors}"
+            f"\nDone. {label}: {created} new | {updated} updated | {errors} errors"
         ))
