@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Campaigns{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Message Campaigns</h2>
+    <a href="{% url 'messaging:campaign_create' %}" class="btn btn-primary"><i class="bi bi-megaphone me-1"></i>New Campaign</a>
+  </div>
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>Title</th><th>Channel</th><th>Status</th><th>Recipients</th><th>Sent</th><th>Created</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for c in campaigns %}
+          <tr>
+            <td class="fw-semibold"><a href="{% url 'messaging:campaign_detail' c.pk %}">{{ c.title }}</a></td>
+            <td>
+              {% if c.channel == 'whatsapp' %}<i class="bi bi-whatsapp text-success me-1"></i>WhatsApp
+              {% elif c.channel == 'facebook' %}<i class="bi bi-facebook text-primary me-1"></i>Facebook
+              {% else %}<i class="bi bi-broadcast text-warning me-1"></i>Both{% endif %}
+            </td>
+            <td>
+              <span class="badge {% if c.status == 'sent' %}bg-success{% elif c.status == 'failed' %}bg-danger{% elif c.status == 'sending' or c.status == 'queued' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ c.get_status_display }}</span>
+            </td>
+            <td>{{ c.total_recipients }}</td>
+            <td>{{ c.sent_count }}</td>
+            <td class="text-muted small">{{ c.created_at|date:"M j, Y" }}</td>
+            <td>
+              {% if c.status == 'draft' or c.status == 'failed' %}
+              <a href="{% url 'messaging:campaign_send' c.pk %}" class="btn btn-sm btn-success">Send</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="text-center py-5 text-muted">No campaigns yet. <a href="{% url 'messaging:campaign_create' %}">Create your first one.</a></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

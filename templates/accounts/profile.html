@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:600px">
+  <h2 class="fw-bold mb-4">My Profile</h2>
+  <div class="card shadow-sm border-0 p-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      {% if user.avatar %}
+        <img src="{{ user.avatar.url }}" class="rounded-circle" width="72" height="72" style="object-fit:cover"/>
+      {% else %}
+        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:72px;height:72px;font-size:1.8rem">{{ user.username|first|upper }}</div>
+      {% endif %}
+      <div>
+        <h4 class="mb-0">{{ user.get_full_name|default:user.username }}</h4>
+        <span class="badge bg-secondary">{{ user.get_role_display }}</span>
+      </div>
+    </div>
+    <table class="table table-borderless">
+      <tr><th>Username</th><td>{{ user.username }}</td></tr>
+      <tr><th>Email</th><td>{{ user.email }}</td></tr>
+      <tr><th>Phone</th><td>{{ user.phone|default:"—" }}</td></tr>
+      <tr><th>Member since</th><td>{{ user.created_at|date:"N j, Y" }}</td></tr>
+    </table>
+    {% if user.is_provider %}
+    <a href="{% url 'services:dashboard' %}" class="btn btn-primary me-2">Provider Dashboard</a>
+    <a href="{% url 'services:provider_setup' %}" class="btn btn-outline-secondary">Edit Business Profile</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Confirm Subscription{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:480px">
+  <h2 class="fw-bold mb-4">Confirm Subscription</h2>
+  <div class="card shadow-sm border-0 p-4 mb-4">
+    <h4>{{ plan.name }} Plan</h4>
+    <p class="text-muted">{{ plan.description }}</p>
+    <ul class="list-unstyled">
+      <li><strong>Customer limit:</strong> {{ plan.customer_limit }}</li>
+      <li><strong>Price:</strong> {% if plan.price_monthly == 0 %}Free{% else %}${{ plan.price_monthly }}/month{% endif %}</li>
+      <li><strong>WhatsApp:</strong> {% if plan.whatsapp_enabled %}Included{% else %}Not included{% endif %}</li>
+      <li><strong>Facebook Marketplace:</strong> {% if plan.facebook_enabled %}Included{% else %}Not included{% endif %}</li>
+    </ul>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary w-100 mb-2">Confirm &amp; Subscribe</button>
+    <a href="{% url 'subscriptions:plans' %}" class="btn btn-outline-secondary w-100">Cancel</a>
+  </form>
+</div>
+{% endblock %}

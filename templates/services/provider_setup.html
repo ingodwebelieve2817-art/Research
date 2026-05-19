@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Business Profile Setup{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:720px">
+  <h2 class="fw-bold mb-1">Your Business Profile</h2>
+  <p class="text-muted mb-4">Complete your profile so customers can find and contact you.</p>
+  <div class="card shadow-sm border-0 p-4">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary px-5">Save Profile</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

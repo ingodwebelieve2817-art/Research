@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ campaign.title }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{% url 'messaging:campaign_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
+    <h2 class="fw-bold mb-0">{{ campaign.title }}</h2>
+    <span class="badge {% if campaign.status == 'sent' %}bg-success{% elif campaign.status == 'failed' %}bg-danger{% elif campaign.status == 'sending' or campaign.status == 'queued' %}bg-warning text-dark{% else %}bg-secondary{% endif %} fs-6">{{ campaign.get_status_display }}</span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4">
+        <h6 class="text-muted text-uppercase small mb-3">Campaign Info</h6>
+        <dl class="row mb-0">
+          <dt class="col-6">Channel</dt><dd class="col-6">{{ campaign.get_channel_display }}</dd>
+          <dt class="col-6">Recipients</dt><dd class="col-6">{{ campaign.total_recipients }}</dd>
+          <dt class="col-6">Sent</dt><dd class="col-6 text-success">{{ campaign.sent_count }}</dd>
+          <dt class="col-6">Failed</dt><dd class="col-6 text-danger">{{ campaign.failed_count }}</dd>
+          <dt class="col-6">Sent at</dt><dd class="col-6">{{ campaign.sent_at|date:"M j, Y H:i"|default:"—" }}</dd>
+        </dl>
+        <hr/>
+        <h6 class="text-muted text-uppercase small mb-2">Message</h6>
+        <p class="mb-0">{{ campaign.message_body }}</p>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <h5 class="fw-bold mb-3">Delivery Log</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr><th>Customer</th><th>Channel</th><th>Status</th><th>Sent at</th><th>Error</th></tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td>{{ log.customer.name }}</td>
+              <td>{{ log.channel }}</td>
+              <td><span class="badge {% if log.status == 'delivered' or log.status == 'read' or log.status == 'sent' %}bg-success{% elif log.status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">{{ log.get_status_display }}</span></td>
+              <td class="text-muted small">{{ log.sent_at|date:"H:i:s"|default:"—" }}</td>
+              <td class="text-danger small">{{ log.error_message|truncatechars:50 }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted">No delivery records yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

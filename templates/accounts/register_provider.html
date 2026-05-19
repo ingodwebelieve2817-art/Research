@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Register as Provider{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:480px">
+  <div class="card shadow-sm border-0 p-4">
+    <h2 class="fw-bold mb-1">List Your Business</h2>
+    <p class="text-muted small mb-4">Create a free provider account and start connecting with customers.</p>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary w-100">Create Account</button>
+    </form>
+    <p class="text-center mt-3 small">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+  </div>
+</div>
+{% endblock %}

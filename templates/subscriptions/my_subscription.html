@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Subscription{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:640px">
+  <h2 class="fw-bold mb-4">My Subscription</h2>
+  {% if subscription %}
+  <div class="card shadow-sm border-0 p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <h4 class="fw-bold mb-1">{{ subscription.plan.name }} Plan</h4>
+        <span class="badge {% if subscription.status == 'active' %}bg-success{% elif subscription.status == 'expired' %}bg-danger{% else %}bg-secondary{% endif %}">{{ subscription.get_status_display }}</span>
+      </div>
+      <div class="text-end">
+        <div class="fs-4 fw-bold">${{ subscription.plan.price_monthly }}<span class="fs-6 text-muted">/mo</span></div>
+      </div>
+    </div>
+    <hr/>
+    <div class="row g-2 text-sm">
+      <div class="col-6"><strong>Customer limit:</strong> {{ subscription.plan.customer_limit }}</div>
+      <div class="col-6"><strong>Started:</strong> {{ subscription.started_at|date:"M j, Y" }}</div>
+      <div class="col-6"><strong>Expires:</strong> {% if subscription.expires_at %}{{ subscription.expires_at|date:"M j, Y" }}{% else %}—{% endif %}</div>
+      <div class="col-6"><strong>Days left:</strong> {% if subscription.days_remaining is not None %}{{ subscription.days_remaining }}{% else %}—{% endif %}</div>
+    </div>
+    <hr/>
+    <a href="{% url 'subscriptions:plans' %}" class="btn btn-outline-primary btn-sm">Change Plan</a>
+  </div>
+
+  <!-- Payment history -->
+  {% if payments %}
+  <h5 class="fw-bold mb-3">Payment History</h5>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr><th>Amount</th><th>Status</th><th>Gateway</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td>${{ p.amount }} {{ p.currency }}</td>
+          <td><span class="badge {% if p.status == 'success' %}bg-success{% elif p.status == 'failed' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ p.get_status_display }}</span></td>
+          <td>{{ p.gateway|default:"—" }}</td>
+          <td class="text-muted small">{{ p.created_at|date:"M j, Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="alert alert-info">
+    You have no active subscription. <a href="{% url 'subscriptions:plans' %}">Browse plans</a>.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

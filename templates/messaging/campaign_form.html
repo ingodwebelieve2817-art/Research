@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}New Campaign{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:640px">
+  <h2 class="fw-bold mb-1">Create Campaign</h2>
+  <p class="text-muted mb-4">This will broadcast a message to your <strong>{{ customer_count }}</strong> opted-in customers.</p>
+  <div class="card shadow-sm border-0 p-4">
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <div class="alert alert-info small">
+        <i class="bi bi-info-circle me-1"></i>
+        WhatsApp messages require customers to have opted in. Facebook messages use the Page Messenger API.
+        Ensure your Meta developer credentials are configured in settings.
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save as Draft</button>
+        <a href="{% url 'messaging:campaign_list' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

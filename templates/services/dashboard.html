@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-2 sidebar py-4 px-3">
+      <div class="text-white fw-bold mb-4 px-2">{{ provider.business_name }}</div>
+      <a href="{% url 'services:dashboard' %}" class="active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+      <a href="{% url 'services:customer_list' %}"><i class="bi bi-people me-2"></i>Customers</a>
+      <a href="{% url 'services:service_manage' %}"><i class="bi bi-briefcase me-2"></i>Services</a>
+      <a href="{% url 'messaging:campaign_list' %}"><i class="bi bi-megaphone me-2"></i>Campaigns</a>
+      <a href="{% url 'subscriptions:my_subscription' %}"><i class="bi bi-credit-card me-2"></i>Subscription</a>
+      <a href="{% url 'services:provider_setup' %}"><i class="bi bi-pencil-square me-2"></i>Edit Profile</a>
+      <hr class="border-secondary"/>
+      <a href="{% url 'accounts:logout' %}" class="text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-md-10 py-4 px-4">
+      <h3 class="fw-bold mb-4">Welcome back, {{ request.user.username }}!</h3>
+
+      <!-- Subscription alert -->
+      {% if not subscription %}
+      <div class="alert alert-warning d-flex align-items-center gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+        <div>You're on the <strong>Basic (Free)</strong> plan — up to 5 customers.
+          <a href="{% url 'subscriptions:plans' %}" class="alert-link ms-1">Upgrade now</a> to reach more.</div>
+      </div>
+      {% elif subscription.is_expired %}
+      <div class="alert alert-danger">Your <strong>{{ subscription.plan.name }}</strong> plan has expired.
+        <a href="{% url 'subscriptions:plans' %}" class="alert-link">Renew</a></div>
+      {% else %}
+      <div class="alert alert-success d-flex align-items-center gap-3">
+        <i class="bi bi-check-circle-fill fs-4"></i>
+        <div><strong>{{ subscription.plan.name }}</strong> plan active
+          {% if subscription.days_remaining is not None %} · {{ subscription.days_remaining }} days remaining{% endif %}
+          <a href="{% url 'subscriptions:my_subscription' %}" class="alert-link ms-2">Manage</a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Stats row -->
+      <div class="row g-3 mb-5">
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card primary border-0 shadow-sm p-3">
+            <div class="text-muted small">Customers</div>
+            <div class="display-6 fw-bold">{{ customer_count }}</div>
+            <div class="text-muted small">of {{ customer_limit }} allowed</div>
+            <div class="progress mt-2" style="height:4px">
+              <div class="progress-bar" style="width:{% widthratio customer_count customer_limit 100 %}%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card success border-0 shadow-sm p-3">
+            <div class="text-muted small">Campaigns Sent</div>
+            <div class="display-6 fw-bold">{{ provider.campaigns.count }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card warning border-0 shadow-sm p-3">
+            <div class="text-muted small">Services Listed</div>
+            <div class="display-6 fw-bold">{{ provider.offered_services.count }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="card stat-card danger border-0 shadow-sm p-3">
+            <div class="text-muted small">Reviews</div>
+            <div class="display-6 fw-bold">{{ provider.reviews.count }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="row g-3 mb-5">
+        <div class="col-md-4">
+          <a href="{% url 'services:customer_add' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
+            <i class="bi bi-person-plus fs-2 text-primary mb-2"></i>
+            <h5 class="fw-bold">Add Customer</h5>
+            <p class="text-muted small mb-0">Register a new customer to your list</p>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'messaging:campaign_create' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
+            <i class="bi bi-megaphone fs-2 text-success mb-2"></i>
+            <h5 class="fw-bold">Send Campaign</h5>
+            <p class="text-muted small mb-0">Broadcast a message on WhatsApp or Facebook</p>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'subscriptions:plans' %}" class="card border-0 shadow-sm p-4 text-decoration-none h-100">
+            <i class="bi bi-arrow-up-circle fs-2 text-warning mb-2"></i>
+            <h5 class="fw-bold">Upgrade Plan</h5>
+            <p class="text-muted small mb-0">Reach more customers with Pro or Max</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent customers -->
+      <h5 class="fw-bold mb-3">Recent Customers</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr><th>Name</th><th>Phone</th><th>WhatsApp</th><th>Facebook</th><th>Added</th></tr>
+          </thead>
+          <tbody>
+            {% for c in customers %}
+            <tr>
+              <td>{{ c.name }}</td>
+              <td>{{ c.phone }}</td>
+              <td>{% if c.opted_in_whatsapp %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}—{% endif %}</td>
+              <td>{% if c.opted_in_facebook %}<i class="bi bi-check-circle-fill text-primary"></i>{% else %}—{% endif %}</td>
+              <td class="text-muted small">{{ c.created_at|date:"M j" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted">No customers yet. <a href="{% url 'services:customer_add' %}">Add one.</a></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if customer_count > 10 %}<a href="{% url 'services:customer_list' %}" class="btn btn-outline-secondary btn-sm">View all {{ customer_count }} customers</a>{% endif %}
+
+      <!-- Recent campaigns -->
+      <h5 class="fw-bold mt-5 mb-3">Recent Campaigns</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr><th>Campaign</th><th>Channel</th><th>Status</th><th>Sent</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            {% for c in recent_campaigns %}
+            <tr>
+              <td><a href="{% url 'messaging:campaign_detail' c.pk %}">{{ c.title }}</a></td>
+              <td>{{ c.get_channel_display }}</td>
+              <td>
+                <span class="badge {% if c.status == 'sent' %}bg-success{% elif c.status == 'failed' %}bg-danger{% elif c.status == 'sending' %}bg-warning{% else %}bg-secondary{% endif %}">{{ c.status }}</span>
+              </td>
+              <td>{{ c.sent_count }}/{{ c.total_recipients }}</td>
+              <td class="text-muted small">{{ c.created_at|date:"M j" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted">No campaigns yet. <a href="{% url 'messaging:campaign_create' %}">Create one.</a></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
