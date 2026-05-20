@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Complete Payment — {{ plan.name }}{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:520px">
+  <h2 class="fw-bold mb-1">Complete Your Payment</h2>
+  <p class="text-muted mb-4">You're subscribing to the <strong>{{ plan.name }}</strong> plan.</p>
+
+  <div class="card border-0 shadow-sm p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <span class="fw-semibold fs-5">{{ plan.name }} Plan</span>
+      <span class="fs-4 fw-bold text-primary">${{ plan.price_monthly }}<small class="fs-6 text-muted fw-normal">/mo</small></span>
+    </div>
+    <ul class="list-unstyled small text-muted mb-0">
+      <li class="mb-1"><i class="bi bi-people-fill text-primary me-2"></i>Reach up to <strong>{{ plan.reach_limit }}</strong> customers</li>
+      <li class="mb-1">
+        <i class="bi bi-whatsapp {% if plan.whatsapp_enabled %}text-success{% else %}text-muted{% endif %} me-2"></i>
+        WhatsApp outreach {% if not plan.whatsapp_enabled %}<span class="text-muted">(not included)</span>{% endif %}
+      </li>
+      <li>
+        <i class="bi bi-facebook {% if plan.facebook_enabled %}text-primary{% else %}text-muted{% endif %} me-2"></i>
+        Facebook outreach {% if not plan.facebook_enabled %}<span class="text-muted">(not included)</span>{% endif %}
+      </li>
+    </ul>
+  </div>
+
+  <button id="pay-btn" class="btn btn-primary w-100 btn-lg mb-3">
+    <i class="bi bi-credit-card me-2"></i>Pay ${{ plan.price_monthly }} Now
+  </button>
+  <a href="{% url 'subscriptions:plans' %}" class="btn btn-outline-secondary w-100">Cancel</a>
+
+  <p class="text-center text-muted small mt-3">
+    <i class="bi bi-shield-lock me-1"></i>Secured by Razorpay
+  </p>
+</div>
+
+<!-- Hidden form to POST verified payment back to server -->
+<form id="payment-form" method="post" action="{% url 'subscriptions:payment_verify' %}">
+  {% csrf_token %}
+  <input type="hidden" name="razorpay_order_id" id="rzp_order_id">
+  <input type="hidden" name="razorpay_payment_id" id="rzp_payment_id">
+  <input type="hidden" name="razorpay_signature" id="rzp_signature">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+    key: "{{ razorpay_key }}",
+    amount: "{{ amount_units }}",
+    currency: "{{ currency }}",
+    name: "LocalPro",
+    description: "{{ plan.name }} Plan — Monthly Subscription",
+    order_id: "{{ razorpay_order_id }}",
+    prefill: {
+      name: "{{ provider.user.get_full_name|default:provider.user.username }}",
+      email: "{{ provider.user.email }}",
+    },
+    theme: { color: "#0d6efd" },
+    handler: function(response) {
+      document.getElementById("rzp_order_id").value = response.razorpay_order_id;
+      document.getElementById("rzp_payment_id").value = response.razorpay_payment_id;
+      document.getElementById("rzp_signature").value = response.razorpay_signature;
+      document.getElementById("payment-form").submit();
+    },
+    modal: {
+      ondismiss: function() {
+        document.getElementById("pay-btn").disabled = false;
+        document.getElementById("pay-btn").innerHTML = '<i class="bi bi-credit-card me-2"></i>Pay ${{ plan.price_monthly }} Now';
+      }
+    }
+  };
+  var rzp = new Razorpay(options);
+
+  document.getElementById("pay-btn").addEventListener("click", function(e) {
+    e.preventDefault();
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Opening payment...';
+    rzp.open();
+  });
+</script>
+{% endblock %}
