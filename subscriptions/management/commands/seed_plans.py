@@ -10,7 +10,7 @@ PLANS = [
     {
         "tier": "basic",
         "name": "Basic",
-        "price_monthly": 100,
+        "price_monthly": ₹100,
         "reach_limit": 1000,
         "whatsapp_enabled": False,
         "facebook_enabled": False,
@@ -22,7 +22,7 @@ PLANS = [
     {
         "tier": "pro",
         "name": "Pro",
-        "price_monthly": 500,
+        "price_monthly": ₹500,
         "reach_limit": 5000,
         "whatsapp_enabled": True,
         "facebook_enabled": False,
@@ -34,7 +34,7 @@ PLANS = [
     {
         "tier": "max",
         "name": "Max",
-        "price_monthly": 1500,
+        "price_monthly":₹1500,
         "reach_limit": 10000,
         "whatsapp_enabled": True,
         "facebook_enabled": True,
