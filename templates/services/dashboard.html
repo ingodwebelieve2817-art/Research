@@ -14,8 +14,9 @@
     --bg-card: rgba(22, 28, 45, 0.7);
     --border-card: rgba(255, 255, 255, 0.08);
     --border-card-hover: rgba(99, 102, 241, 0.3);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-main: #ffffff;
+    --text-muted: #e2e8f0; /* Premium Pearl White */
+    --text-dimmed: #94a3b8; /* Muted Slate */
     --color-primary: #6366f1; /* Indigo */
     --color-secondary: #06b6d4; /* Cyan */
     --color-success: #10b981; /* Emerald */
@@ -29,6 +30,11 @@
     background-color: var(--bg-primary) !important;
     color: var(--text-main);
     font-family: var(--font-body);
+  }
+
+  /* Explicit Bootstrap text overrides to prevent camouflage */
+  .text-muted {
+    color: var(--text-muted) !important;
   }
 
   /* App Container utilities */
@@ -133,7 +139,7 @@
   .metric-card.danger::after { background: var(--color-danger); }
 
   .metric-title {
-    color: var(--text-muted);
+    color: var(--text-dimmed);
     font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -240,7 +246,7 @@
   }
 
   .table-panel th {
-    color: var(--text-muted);
+    color: var(--text-dimmed);
     font-family: var(--font-heading);
     font-weight: 600;
     text-transform: uppercase;
