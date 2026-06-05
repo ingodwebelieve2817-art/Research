@@ -8,7 +8,7 @@
   <div class="card border-0 shadow-sm p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <span class="fw-semibold fs-5">{{ plan.name }} Plan</span>
-      <span class="fs-4 fw-bold text-primary">${{ plan.price_monthly }}<small class="fs-6 text-muted fw-normal">/mo</small></span>
+      <span class="fs-4 fw-bold text-primary">₹{{ plan.price_monthly }}<small class="fs-6 text-muted fw-normal">/mo</small></span>
     </div>
     <ul class="list-unstyled small text-muted mb-0">
       <li class="mb-1"><i class="bi bi-people-fill text-primary me-2"></i>Reach up to <strong>{{ plan.reach_limit }}</strong> customers</li>
@@ -24,7 +24,7 @@
   </div>
 
   <button id="pay-btn" class="btn btn-primary w-100 btn-lg mb-3">
-    <i class="bi bi-credit-card me-2"></i>Pay ${{ plan.price_monthly }} Now
+    <i class="bi bi-credit-card me-2"></i>Pay ₹{{ plan.price_monthly }} Now
   </button>
   <a href="{% url 'subscriptions:plans' %}" class="btn btn-outline-secondary w-100">Cancel</a>
 
@@ -64,7 +64,7 @@
     modal: {
       ondismiss: function() {
         document.getElementById("pay-btn").disabled = false;
-        document.getElementById("pay-btn").innerHTML = '<i class="bi bi-credit-card me-2"></i>Pay ${{ plan.price_monthly }} Now';
+        document.getElementById("pay-btn").innerHTML = '<i class="bi bi-credit-card me-2"></i>Pay ₹{{ plan.price_monthly }} Now';
       }
     }
   };

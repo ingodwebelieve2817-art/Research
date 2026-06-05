@@ -17,7 +17,11 @@ def plans_page(request):
 
 @login_required
 def subscribe(request, plan_id):
-    provider = get_object_or_404(ServiceProvider, user=request.user)
+    try:
+        provider = ServiceProvider.objects.get(user=request.user)
+    except ServiceProvider.DoesNotExist:
+        messages.warning(request, "Please complete your business profile before subscribing.")
+        return redirect("accounts:register_provider")
     plan = get_object_or_404(SubscriptionPlan, pk=plan_id)
 
     if request.method == "POST":

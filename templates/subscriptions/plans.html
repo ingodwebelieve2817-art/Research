@@ -15,7 +15,7 @@
         <h3 class="fw-bold">{{ plan.name }}</h3>
         <div class="display-4 fw-bold my-3">
           {% if plan.price_monthly == 0 %}Free
-          {% else %}${{ plan.price_monthly }}<span class="fs-5 fw-normal text-muted">/mo</span>
+          {% else %}₹{{ plan.price_monthly }}<span class="fs-5 fw-normal text-muted">/mo</span>
           {% endif %}
         </div>
 
@@ -43,7 +43,7 @@
         {% if user.is_authenticated %}
           <a href="{% url 'subscriptions:subscribe' plan.pk %}"
              class="btn {% if plan.tier == 'pro' %}btn-primary{% elif plan.tier == 'max' %}btn-warning{% else %}btn-outline-secondary{% endif %} w-100">
-            {% if plan.price_monthly == 0 %}Start Free{% else %}Subscribe — ${{ plan.price_monthly }}/mo{% endif %}
+            {% if plan.price_monthly == 0 %}Start Free{% else %}Subscribe — ₹{{ plan.price_monthly }}/mo{% endif %}
           </a>
         {% else %}
           <a href="{% url 'accounts:register' %}"

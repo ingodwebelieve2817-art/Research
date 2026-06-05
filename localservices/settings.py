@@ -112,7 +112,7 @@ PLAN_REACH_LIMITS = {
 # Razorpay
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
-RAZORPAY_CURRENCY = os.getenv("RAZORPAY_CURRENCY", "USD")
+RAZORPAY_CURRENCY = os.getenv("RAZORPAY_CURRENCY", "INR")
 
 # Email
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
