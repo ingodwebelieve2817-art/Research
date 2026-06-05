@@ -1,68 +1,95 @@
 {% extends "base.html" %}
 {% block title %}Find Providers{% endblock %}
 {% block content %}
-<div class="container py-5">
-  <h2 class="fw-bold mb-4">Local Service Providers</h2>
 
-  <!-- Filters -->
-  <form method="get" class="row g-2 mb-4">
-    <div class="col-md-4">
-      <select name="category" class="form-select">
-        <option value="">All Categories</option>
-        {% for slug, label in categories %}
-        <option value="{{ slug }}" {% if slug == category %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-4">
-      <input type="text" name="city" class="form-control" placeholder="City / Area" value="{{ city }}"/>
-    </div>
-    <div class="col-md-2">
-      <button class="btn btn-primary w-100" type="submit">Search</button>
-    </div>
-  </form>
+<section class="page-header">
+  <div class="container text-center">
+    <h1 class="section-title mb-3">Find <span class="text-gradient">Local Pros</span></h1>
+    <p class="subtitle">Browse verified service providers in your city — barbers, plumbers, electricians and more.</p>
+  </div>
+</section>
 
-  <div class="row g-4">
-    {% for provider in providers %}
-    <div class="col-md-6 col-lg-4">
-      <div class="card h-100 border-0 shadow-sm">
-        {% if provider.cover_image %}
-        <img src="{{ provider.cover_image.url }}" class="card-img-top" style="height:140px;object-fit:cover"/>
-        {% else %}
-        <div class="bg-secondary" style="height:140px"></div>
-        {% endif %}
-        <div class="card-body">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            {% if provider.logo %}
-            <img src="{{ provider.logo.url }}" class="rounded-circle border" width="44" height="44" style="object-fit:cover"/>
+<section class="section-dark">
+  <div class="container">
+
+    <!-- Filters -->
+    <form method="get" class="row g-2 mb-5 justify-content-center">
+      <div class="col-md-4">
+        <select name="category" class="form-select">
+          <option value="">All Categories</option>
+          {% for slug, label in categories %}
+          <option value="{{ slug }}" {% if slug == category %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <input type="text" name="city" class="form-control" placeholder="City / Area" value="{{ city }}"/>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-premium-primary w-100" type="submit">
+          <i class="bi bi-search me-1"></i>Search
+        </button>
+      </div>
+    </form>
+
+    <!-- Provider Cards -->
+    <div class="row g-4">
+      {% for provider in providers %}
+      <div class="col-md-6 col-lg-4">
+        <div class="provider-card">
+          <div class="provider-cover">
+            {% if provider.cover_image %}
+            <img src="{{ provider.cover_image.url }}" alt="{{ provider.business_name }}"/>
             {% endif %}
-            <div>
-              <h5 class="card-title mb-0">{{ provider.business_name }}</h5>
-              <span class="badge bg-light text-dark">{{ provider.get_category_display }}</span>
-            </div>
           </div>
-          <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i>{{ provider.city }}{% if provider.state %}, {{ provider.state }}{% endif %}</p>
-          {% if provider.avg_rating %}
-          <p class="mb-2 small">
-            {% for i in "12345" %}
-              {% if forloop.counter <= provider.avg_rating|floatformat:0|add:0 %}⭐{% else %}☆{% endif %}
-            {% endfor %}
-            ({{ provider.avg_rating|floatformat:1 }})
-          </p>
-          {% endif %}
-          <p class="card-text small text-muted">{{ provider.description|truncatewords:20 }}</p>
-        </div>
-        <div class="card-footer bg-white border-0 pb-3">
-          <a href="{% url 'services:provider_detail' provider.pk %}" class="btn btn-outline-primary btn-sm w-100">View Profile</a>
+          <div class="p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              {% if provider.logo %}
+              <img src="{{ provider.logo.url }}" class="rounded-circle border border-secondary" width="48" height="48" style="object-fit:cover"/>
+              {% else %}
+              <div class="rounded-circle d-flex align-items-center justify-content-center"
+                   style="width:48px;height:48px;background:rgba(99,102,241,0.15);font-size:1.5rem">
+                🛠️
+              </div>
+              {% endif %}
+              <div>
+                <h5 class="mb-1 fw-bold text-white">{{ provider.business_name }}</h5>
+                <span class="badge-soft">{{ provider.get_category_display }}</span>
+              </div>
+            </div>
+
+            <p class="text-secondary small mb-2">
+              <i class="bi bi-geo-alt-fill me-1" style="color:var(--color-secondary)"></i>
+              {{ provider.city }}{% if provider.state %}, {{ provider.state }}{% endif %}
+            </p>
+
+            {% if provider.avg_rating %}
+            <p class="mb-3 small text-warning">
+              {% for i in "12345" %}
+                {% if forloop.counter <= provider.avg_rating|floatformat:0|add:0 %}★{% else %}<span class="text-secondary">★</span>{% endif %}
+              {% endfor %}
+              <span class="text-muted ms-1">({{ provider.avg_rating|floatformat:1 }})</span>
+            </p>
+            {% endif %}
+
+            <p class="text-secondary small mb-4">{{ provider.description|truncatewords:18 }}</p>
+
+            <a href="{% url 'services:provider_detail' provider.pk %}" class="btn btn-premium-outline w-100">
+              View Profile <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
         </div>
       </div>
+      {% empty %}
+      <div class="col-12 text-center py-5">
+        <div class="display-1 mb-3" style="opacity:.4">🔍</div>
+        <h4 class="text-white">No providers found</h4>
+        <p class="text-secondary">Try adjusting your filters or check back soon.</p>
+      </div>
+      {% endfor %}
     </div>
-    {% empty %}
-    <div class="col-12 text-center text-muted py-5">
-      <i class="bi bi-search fs-1"></i>
-      <p class="mt-3">No providers found. Try adjusting your filters.</p>
-    </div>
-    {% endfor %}
+
   </div>
-</div>
+</section>
+
 {% endblock %}
