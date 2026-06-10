@@ -23,7 +23,15 @@ INSTALLED_APPS = [
     "customers",       # platform's own customer dataset
     "subscriptions",
     "messaging",
+    "leads",
 ]
+
+# LinkedIn Lead Capture (n8n webhook secret)
+N8N_WEBHOOK_SECRET = os.getenv("N8N_WEBHOOK_SECRET", "")
+
+# Telegram notifications for lead alerts
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
