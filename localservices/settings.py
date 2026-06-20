@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "messaging",
     "projects",
     "activities",
+    "admin_dashboard",
 ]
 
 MIDDLEWARE = [

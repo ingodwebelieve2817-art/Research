@@ -1,0 +1,136 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Admin Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h2 fw-bold text-gradient">Dashboard Overview</h1>
+    <p class="text-dimmed">Real-time statistics and system operations summary.</p>
+  </div>
+</div>
+
+<!-- Stats row -->
+<div class="row g-4 mb-5">
+  <div class="col-md-4 col-xl-2.4 col-lg-4">
+    <div class="glass-card d-flex align-items-center justify-content-between">
+      <div>
+        <h6 class="text-dimmed mb-1">Total Users</h6>
+        <h3 class="fw-bold mb-0">{{ total_users }}</h3>
+      </div>
+      <div class="card-stat-icon">
+        <i class="bi bi-people text-primary"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 col-xl-2.4 col-lg-4">
+    <div class="glass-card d-flex align-items-center justify-content-between">
+      <div>
+        <h6 class="text-dimmed mb-1">Service Providers</h6>
+        <h3 class="fw-bold mb-0">{{ total_providers }}</h3>
+      </div>
+      <div class="card-stat-icon">
+        <i class="bi bi-briefcase text-info"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4 col-xl-2.4 col-lg-4">
+    <div class="glass-card d-flex align-items-center justify-content-between">
+      <div>
+        <h6 class="text-dimmed mb-1">Customers</h6>
+        <h3 class="fw-bold mb-0">{{ total_customers }}</h3>
+      </div>
+      <div class="card-stat-icon">
+        <i class="bi bi-person-hearts text-success"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-xl-2.4 col-lg-6">
+    <div class="glass-card d-flex align-items-center justify-content-between">
+      <div>
+        <h6 class="text-dimmed mb-1">Total Projects</h6>
+        <h3 class="fw-bold mb-0">{{ total_projects }}</h3>
+      </div>
+      <div class="card-stat-icon">
+        <i class="bi bi-folder2-open text-warning"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-xl-2.4 col-lg-6">
+    <div class="glass-card d-flex align-items-center justify-content-between">
+      <div>
+        <h6 class="text-dimmed mb-1">Active Subscriptions</h6>
+        <h3 class="fw-bold mb-0">{{ active_subscriptions }}</h3>
+      </div>
+      <div class="card-stat-icon">
+        <i class="bi bi-credit-card text-danger"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Project Status Distribution -->
+  <div class="col-lg-5">
+    <div class="glass-card">
+      <h5 class="fw-bold mb-4"><i class="bi bi-pie-chart me-2 text-primary"></i>Projects Status</h5>
+      
+      {% for item in project_status_data %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-muted small">{{ item.status_display }}</span>
+            <span class="fw-bold small">{{ item.count }}</span>
+          </div>
+          <div class="progress bg-dark" style="height: 8px;">
+            <div class="progress-bar {% if item.status == 'completed' %}bg-success{% elif item.status == 'in_progress' %}bg-info{% elif item.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}" 
+                 role="progressbar" 
+                 style="width: {{ item.percentage }}%" 
+                 aria-valuenow="{{ item.count }}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="{{ total_projects }}"></div>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-dimmed text-center my-4">No project status data available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Audit Activity Logs -->
+  <div class="col-lg-7">
+    <div class="glass-card">
+      <h5 class="fw-bold mb-4"><i class="bi bi-journal-text me-2 text-primary"></i>Recent System Activities</h5>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover table-borderless small">
+          <thead>
+            <tr class="text-dimmed border-bottom border-secondary">
+              <th>User</th>
+              <th>Action</th>
+              <th>Details</th>
+              <th class="text-end">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in recent_activities %}
+              <tr>
+                <td class="fw-bold text-white">{{ log.user.username }}</td>
+                <td><span class="badge bg-secondary">{{ log.action }}</span></td>
+                <td class="text-muted">{{ log.details }}</td>
+                <td class="text-end text-dimmed">{{ log.created_at|date:"M d, H:i" }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-dimmed py-4">No activities logged yet.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
