@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-0">Customers</h2>
+      <small class="text-muted">{{ customer_count }} of {{ customer_limit }} slots used</small>
+    </div>
+    {% if customer_count < customer_limit %}
+    <a href="{% url 'services:customer_add' %}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>Add Customer</a>
+    {% else %}
+    <a href="{% url 'subscriptions:plans' %}" class="btn btn-warning"><i class="bi bi-arrow-up-circle me-1"></i>Upgrade to Add More</a>
+    {% endif %}
+  </div>
+  <div class="progress mb-4" style="height:8px">
+    <div class="progress-bar {% if customer_count >= customer_limit %}bg-danger{% endif %}" style="width:{% widthratio customer_count customer_limit 100 %}%"></div>
+  </div>
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>Name</th><th>Phone</th><th>WhatsApp</th><th>Email</th><th>Opted-in WA</th><th>Opted-in FB</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for c in customers %}
+          <tr>
+            <td class="fw-semibold">{{ c.name }}</td>
+            <td>{{ c.phone }}</td>
+            <td>{{ c.whatsapp_number|default:"—" }}</td>
+            <td>{{ c.email|default:"—" }}</td>
+            <td>{% if c.opted_in_whatsapp %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}</td>
+            <td>{% if c.opted_in_facebook %}<i class="bi bi-check-circle-fill text-primary"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}</td>
+            <td><a href="{% url 'services:customer_edit' c.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="text-center py-5 text-muted">No customers yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

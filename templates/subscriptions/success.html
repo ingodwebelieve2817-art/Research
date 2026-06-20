@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Subscription Active!{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:560px">
+
+  <!-- Success banner -->
+  <div class="text-center mb-5">
+    <div class="display-1 text-success mb-3"><i class="bi bi-check-circle-fill"></i></div>
+    <h1 class="fw-bold">You're all set!</h1>
+    <p class="lead text-muted">Your <strong>{{ subscription.plan.name }}</strong> subscription is now active.</p>
+  </div>
+
+  <!-- Subscription details card -->
+  <div class="card border-0 shadow p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Subscription Details</h5>
+    <div class="row g-2">
+      <div class="col-6 text-muted small">Plan</div>
+      <div class="col-6 fw-semibold">{{ subscription.plan.name }}</div>
+
+      <div class="col-6 text-muted small">Customers reached</div>
+      <div class="col-6 fw-semibold">Up to {{ subscription.plan.reach_limit }}</div>
+
+      <div class="col-6 text-muted small">WhatsApp</div>
+      <div class="col-6">
+        {% if subscription.plan.whatsapp_enabled %}
+          <span class="badge bg-success">Included</span>
+        {% else %}
+          <span class="badge bg-secondary">Not included</span>
+        {% endif %}
+      </div>
+
+      <div class="col-6 text-muted small">Facebook</div>
+      <div class="col-6">
+        {% if subscription.plan.facebook_enabled %}
+          <span class="badge bg-primary">Included</span>
+        {% else %}
+          <span class="badge bg-secondary">Not included</span>
+        {% endif %}
+      </div>
+
+      <div class="col-6 text-muted small">Started</div>
+      <div class="col-6 fw-semibold">{{ subscription.started_at|date:"M j, Y" }}</div>
+
+      <div class="col-6 text-muted small">Expires</div>
+      <div class="col-6 fw-semibold">
+        {% if subscription.expires_at %}{{ subscription.expires_at|date:"M j, Y" }}{% else %}—{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- What happens next -->
+  <div class="card border-0 shadow-sm p-4 mb-4 bg-light">
+    <h6 class="fw-bold mb-3"><i class="bi bi-send-fill text-primary me-2"></i>What happens next</h6>
+    <ol class="mb-0 small text-muted ps-3">
+      <li class="mb-2">We scan our customer database for people in <strong>{{ provider.city }}</strong> looking for <strong>{{ provider.get_category_display }}</strong> services.</li>
+      <li class="mb-2">We send them your business details via WhatsApp{% if subscription.plan.facebook_enabled %} and Facebook{% endif %}.</li>
+      <li>Interested customers will contact you directly at <strong>{{ provider.whatsapp_number }}</strong>.</li>
+    </ol>
+  </div>
+
+  <div class="alert alert-info small">
+    <i class="bi bi-envelope me-1"></i>
+    A confirmation email has been sent to <strong>{{ provider.user.email }}</strong>.
+  </div>
+
+  <div class="d-flex gap-3">
+    <a href="{% url 'services:dashboard' %}" class="btn btn-primary flex-fill">
+      <i class="bi bi-speedometer2 me-1"></i>Go to Dashboard
+    </a>
+    <a href="{% url 'subscriptions:my_subscription' %}" class="btn btn-outline-secondary flex-fill">
+      <i class="bi bi-credit-card me-1"></i>Manage Plan
+    </a>
+  </div>
+
+</div>
+{% endblock %}

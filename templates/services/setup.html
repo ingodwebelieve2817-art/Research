@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Business Profile{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:680px">
+  <h2 class="fw-bold mb-1">Your Business Profile</h2>
+  <p class="text-muted mb-4">
+    This information is what we send to customers when we reach out on your behalf.
+    Make sure your <strong>city</strong> and <strong>category</strong> are correct —
+    we use them to find matching customers in our database.
+  </p>
+  <div class="card shadow-sm border-0 p-4">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="form-text text-muted">{{ field.help_text }}</div>{% endif %}
+        {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary px-5 mt-2">Save & Continue to Plans</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

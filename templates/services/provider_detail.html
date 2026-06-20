@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ provider.business_name }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Main -->
+    <div class="col-lg-8">
+      {% if provider.cover_image %}
+      <img src="{{ provider.cover_image.url }}" class="img-fluid rounded-3 mb-4 w-100" style="max-height:280px;object-fit:cover"/>
+      {% endif %}
+      <div class="d-flex align-items-center gap-3 mb-3">
+        {% if provider.logo %}
+        <img src="{{ provider.logo.url }}" class="rounded-circle border" width="72" height="72" style="object-fit:cover"/>
+        {% endif %}
+        <div>
+          <h1 class="h2 fw-bold mb-0">{{ provider.business_name }}</h1>
+          <span class="badge bg-primary">{{ provider.get_category_display }}</span>
+          {% if provider.is_verified %}<span class="badge bg-success ms-1"><i class="bi bi-patch-check-fill"></i> Verified</span>{% endif %}
+        </div>
+      </div>
+      <p class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ provider.address }}{% if provider.address %}, {% endif %}{{ provider.city }}{% if provider.state %}, {{ provider.state }}{% endif %}</p>
+      <p class="lead">{{ provider.description }}</p>
+
+      <!-- Services -->
+      {% if services %}
+      <h4 class="fw-bold mt-4 mb-3">Services Offered</h4>
+      <div class="row g-3">
+        {% for svc in services %}
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm p-3 h-100">
+            <h6 class="fw-bold mb-1">{{ svc.title }}</h6>
+            <p class="text-muted small mb-2">{{ svc.description }}</p>
+            <span class="text-primary fw-bold">${{ svc.price }} <small class="text-muted fw-normal">{{ svc.price_unit }}</small></span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Reviews -->
+      <h4 class="fw-bold mt-5 mb-3">Customer Reviews</h4>
+      {% if reviews %}
+      {% for review in reviews %}
+      <div class="card border-0 shadow-sm p-3 mb-3">
+        <div class="d-flex justify-content-between">
+          <strong>{{ review.customer.username }}</strong>
+          <span>{% for i in "12345" %}{% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}{% endfor %}</span>
+        </div>
+        <p class="text-muted small mb-0 mt-1">{{ review.comment }}</p>
+        <small class="text-muted">{{ review.created_at|date:"N j, Y" }}</small>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p class="text-muted">No reviews yet. Be the first!</p>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar contact card -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow p-4 sticky-top" style="top:80px">
+        <h5 class="fw-bold mb-3">Contact & Book</h5>
+        {% if avg_rating %}
+        <p class="mb-2">
+          {% for i in "12345" %}{% if forloop.counter <= avg_rating|floatformat:0|add:0 %}⭐{% else %}☆{% endif %}{% endfor %}
+          <strong>{{ avg_rating|floatformat:1 }}</strong> avg rating
+        </p>
+        {% endif %}
+        {% if provider.whatsapp_number %}
+        <a href="https://wa.me/{{ provider.whatsapp_number|cut:'+' }}" target="_blank" class="btn btn-success w-100 mb-2">
+          <i class="bi bi-whatsapp me-2"></i>Message on WhatsApp
+        </a>
+        {% endif %}
+        {% if provider.facebook_page_id %}
+        <a href="https://facebook.com/{{ provider.facebook_page_id }}" target="_blank" class="btn btn-primary w-100 mb-2">
+          <i class="bi bi-facebook me-2"></i>Facebook Page
+        </a>
+        {% endif %}
+        {% if provider.website %}
+        <a href="{{ provider.website }}" target="_blank" class="btn btn-outline-secondary w-100 mb-2">
+          <i class="bi bi-globe me-2"></i>Website
+        </a>
+        {% endif %}
+        <hr/>
+        <small class="text-muted"><i class="bi bi-clock me-1"></i>Member since {{ provider.created_at|date:"Y" }}</small>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

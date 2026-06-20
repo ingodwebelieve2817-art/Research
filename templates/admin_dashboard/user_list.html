@@ -1,0 +1,85 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}User Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h2 fw-bold text-gradient">User Management</h1>
+    <p class="text-dimmed">View, edit, suspend, or delete users and service providers.</p>
+  </div>
+</div>
+
+<!-- Search bar -->
+<div class="glass-card mb-4 py-3 px-4">
+  <form method="GET" action="{% url 'admin_dashboard:user_list' %}" class="row g-3 align-items-center">
+    <div class="col-md-10">
+      <div class="input-group">
+        <span class="input-group-text bg-secondary border-0 text-dimmed"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" class="form-control bg-secondary border-0 text-white" placeholder="Search by username, email, or phone number..." value="{{ query }}">
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel-fill me-1"></i>Search</button>
+    </div>
+  </form>
+</div>
+
+<!-- Users Table -->
+<div class="glass-card">
+  <div class="table-responsive">
+    <table class="table table-dark-custom">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email Address</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Date Joined</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi {% if user.is_superuser %}bi-shield-fill-check text-warning{% else %}bi-person-fill text-muted{% endif %} fs-5"></i>
+                <div>
+                  <span class="fw-bold text-white">{{ user.username }}</span>
+                  {% if user.is_superuser %}
+                    <span class="badge bg-warning text-dark ms-1 small" style="font-size:0.7rem">Super Admin</span>
+                  {% elif user.provider_profile %}
+                    <span class="badge bg-info text-dark ms-1 small" style="font-size:0.7rem">{{ user.provider_profile.get_category_display }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </td>
+            <td>{{ user.email|default:"-" }}</td>
+            <td>{{ user.phone|default:"-" }}</td>
+            <td>
+              {% if user.is_active %}
+                <span class="badge badge-active"><i class="bi bi-check-circle-fill me-1"></i>Active</span>
+              {% else %}
+                <span class="badge badge-inactive"><i class="bi bi-slash-circle-fill me-1"></i>Suspended</span>
+              {% endif %}
+            </td>
+            <td class="text-dimmed small">{{ user.date_joined|date:"Y-m-d H:i" }}</td>
+            <td class="text-end">
+              <a href="{% url 'admin_dashboard:user_detail' user.pk %}" class="btn btn-outline-light btn-sm me-1"><i class="bi bi-eye"></i> Details</a>
+              <a href="{% url 'admin_dashboard:user_edit' user.pk %}" class="btn btn-outline-primary btn-sm me-1"><i class="bi bi-pencil"></i> Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-dimmed py-5">
+              <i class="bi bi-people-fill fs-1 d-block mb-3 opacity-25"></i>
+              No users found matching your search.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,243 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}User Details - {{ admin_user.username }}{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'admin_dashboard:user_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Users List</a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h2 fw-bold text-gradient">User Profile: {{ admin_user.username }}</h1>
+    <p class="text-dimmed">Detailed account metrics, linked profiles, and management commands.</p>
+  </div>
+  <div>
+    <a href="{% url 'admin_dashboard:user_edit' admin_user.pk %}" class="btn btn-primary"><i class="bi bi-pencil-square me-1"></i>Edit Profile</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left Side: Profile Info -->
+  <div class="col-lg-6">
+    <div class="glass-card mb-4">
+      <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-person-badge-fill me-2 text-primary"></i>Account Information</h5>
+      <div class="row mb-3">
+        <div class="col-sm-4 text-dimmed">Username:</div>
+        <div class="col-sm-8 fw-semibold text-white">{{ admin_user.username }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-4 text-dimmed">Email:</div>
+        <div class="col-sm-8 text-white">{{ admin_user.email|default:"Not Provided" }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-4 text-dimmed">Phone Number:</div>
+        <div class="col-sm-8 text-white">{{ admin_user.phone|default:"Not Provided" }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-4 text-dimmed">Supabase UID:</div>
+        <div class="col-sm-8 text-info font-monospace small">{{ admin_user.supabase_uid|default:"No Supabase Auth Link" }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-4 text-dimmed">Joined Date:</div>
+        <div class="col-sm-8 text-white">{{ admin_user.date_joined|date:"F d, Y H:i" }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-sm-4 text-dimmed">Account Status:</div>
+        <div class="col-sm-8">
+          {% if admin_user.is_active %}
+            <span class="badge badge-active"><i class="bi bi-check-circle-fill me-1"></i>Active</span>
+          {% else %}
+            <span class="badge badge-inactive"><i class="bi bi-slash-circle-fill me-1"></i>Suspended</span>
+          {% endif %}
+          
+          {% if admin_user.is_superuser %}
+            <span class="badge bg-warning text-dark ms-1"><i class="bi bi-shield-fill-check me-1"></i>Superuser</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Administrative Operations / Danger Zone -->
+    <div class="glass-card border border-danger">
+      <h5 class="fw-bold text-danger mb-4 border-bottom border-danger pb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Danger Zone</h5>
+      
+      {% if admin_user.is_superuser %}
+        <p class="text-dimmed small mb-0">No dangerous operations can be performed on Super Admin accounts from this portal.</p>
+      {% else %}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="fw-bold mb-1">Suspend / Reactivate User</h6>
+            <p class="text-dimmed small mb-0">Suspended users cannot log in or perform actions.</p>
+          </div>
+          <form method="POST" action="{% url 'admin_dashboard:user_toggle_status' admin_user.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn {% if admin_user.is_active %}btn-outline-warning{% else %}btn-success{% endif %} btn-sm">
+              {% if admin_user.is_active %}<i class="bi bi-slash-circle me-1"></i>Suspend{% else %}<i class="bi bi-check-circle me-1"></i>Reactivate{% endif %}
+            </button>
+          </form>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-3">
+          <div>
+            <h6 class="fw-bold text-danger mb-1">Delete Account</h6>
+            <p class="text-dimmed small mb-0">Permanently delete this user, their profile, and all associated data.</p>
+          </div>
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUserModal">
+            <i class="bi bi-trash-fill me-1"></i>Delete Account
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Right Side: Profile Details & Audits -->
+  <div class="col-lg-6">
+    {% if provider %}
+      <div class="glass-card mb-4">
+        <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-briefcase-fill me-2 text-primary"></i>Service Provider Details</h5>
+        <div class="row mb-3">
+          <div class="col-sm-4 text-dimmed">Business Name:</div>
+          <div class="col-sm-8 fw-semibold text-white">{{ provider.business_name }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4 text-dimmed">Category:</div>
+          <div class="col-sm-8 text-white">{{ provider.get_category_display }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4 text-dimmed">Location:</div>
+          <div class="col-sm-8 text-white">{{ provider.city }}, {{ provider.state }}, {{ provider.country }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4 text-dimmed">Address:</div>
+          <div class="col-sm-8 text-white">{{ provider.address|default:"Not Provided" }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4 text-dimmed">WhatsApp Contact:</div>
+          <div class="col-sm-8 text-white">{{ provider.whatsapp_number }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4 text-dimmed">Facebook Page:</div>
+          <div class="col-sm-8">
+            {% if provider.facebook_page_url %}
+              <a href="{{ provider.facebook_page_url }}" target="_blank" class="text-info">{{ provider.facebook_page_url }}</a>
+            {% else %}
+              <span class="text-dimmed">None</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-4 text-dimmed">Website URL:</div>
+          <div class="col-sm-8">
+            {% if provider.website %}
+              <a href="{{ provider.website }}" target="_blank" class="text-info">{{ provider.website }}</a>
+            {% else %}
+              <span class="text-dimmed">None</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="glass-card mb-4">
+        <h5 class="fw-bold mb-3 border-bottom border-secondary pb-2"><i class="bi bi-briefcase-fill me-2 text-primary"></i>Service Provider Details</h5>
+        <p class="text-dimmed small mb-0">This user does not have a registered Service Provider profile.</p>
+      </div>
+    {% endif %}
+
+    <!-- User Project Summary -->
+    <div class="glass-card mb-4">
+      <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-folder-fill me-2 text-primary"></i>Projects Summary</h5>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover table-borderless small">
+          <thead>
+            <tr class="text-dimmed border-bottom border-secondary">
+              <th>Project Name</th>
+              <th>Customer</th>
+              <th>Status</th>
+              <th class="text-end">Budget</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for project in projects %}
+              <tr>
+                <td class="fw-bold text-white">{{ project.name }}</td>
+                <td>{{ project.customer.name|default:"General Public" }}</td>
+                <td>
+                  <span class="badge {% if project.status == 'completed' %}bg-success{% elif project.status == 'in_progress' %}bg-info{% elif project.status == 'cancelled' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                    {{ project.get_status_display }}
+                  </span>
+                </td>
+                <td class="text-end text-white">${{ project.budget|default:"0.00" }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-dimmed py-4">No projects records found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Activities Timeline Logs -->
+<div class="row g-4 mt-1">
+  <div class="col-12">
+    <div class="glass-card">
+      <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-clock-history me-2 text-primary"></i>User Activity History Audit</h5>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover table-borderless small">
+          <thead>
+            <tr class="text-dimmed border-bottom border-secondary">
+              <th>Action</th>
+              <th>Log Details</th>
+              <th class="text-end">Logged Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in activities %}
+              <tr>
+                <td><span class="badge bg-secondary">{{ log.action }}</span></td>
+                <td class="text-muted">{{ log.details }}</td>
+                <td class="text-end text-dimmed">{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="3" class="text-center text-dimmed py-4">No audit logs for this user account.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete User Confirmation Modal -->
+{% if not admin_user.is_superuser %}
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-secondary text-white border-0">
+      <div class="modal-header border-bottom border-dark">
+        <h5 class="modal-title fw-bold text-danger" id="deleteUserModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Account Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to permanently delete the user account for <strong>{{ admin_user.username }}</strong>?</p>
+        <p class="text-danger small"><i class="bi bi-info-circle me-1"></i>This action is irreversible. All associated business details, projects history, and credentials will be permanently erased.</p>
+      </div>
+      <div class="modal-footer border-top border-dark">
+        <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="{% url 'admin_dashboard:user_delete' admin_user.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash-fill me-1"></i>Delete permanently</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

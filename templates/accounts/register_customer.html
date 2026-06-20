@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:480px">
+  <div class="card shadow-sm border-0 p-4">
+    <h2 class="fw-bold mb-1">Create a Customer Account</h2>
+    <p class="text-muted small mb-4">Find and connect with local service providers near you.</p>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-success w-100">Sign Up</button>
+    </form>
+    <p class="text-center mt-3 small">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    <p class="text-center small">Are you a business? <a href="{% url 'accounts:register_provider' %}">Register as a provider</a></p>
+  </div>
+</div>
+{% endblock %}

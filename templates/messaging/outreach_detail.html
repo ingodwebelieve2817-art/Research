@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Outreach Details{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{% url 'messaging:outreach_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
+    <h2 class="fw-bold mb-0">Outreach on {{ outreach.created_at|date:"M j, Y" }}</h2>
+    <span class="badge {% if outreach.status == 'done' %}bg-success{% elif outreach.status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %} fs-6">
+      {{ outreach.get_status_display }}
+    </span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4">
+        <h6 class="text-muted text-uppercase small mb-3">Summary</h6>
+        <dl class="row mb-0">
+          <dt class="col-6">City</dt><dd class="col-6">{{ outreach.target_city }}</dd>
+          <dt class="col-6">Service</dt><dd class="col-6">{{ outreach.target_category }}</dd>
+          <dt class="col-6">Channel</dt><dd class="col-6">{{ outreach.get_channel_display }}</dd>
+          <dt class="col-6">Plan Limit</dt><dd class="col-6">{{ outreach.reach_limit }}</dd>
+          <dt class="col-6">Matched</dt><dd class="col-6">{{ outreach.total_matched }}</dd>
+          <dt class="col-6">Sent</dt><dd class="col-6 text-success fw-bold">{{ outreach.total_sent }}</dd>
+          <dt class="col-6">Failed</dt><dd class="col-6 text-danger">{{ outreach.total_failed }}</dd>
+          <dt class="col-6">Completed</dt><dd class="col-6 small text-muted">{{ outreach.completed_at|date:"H:i:s"|default:"—" }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <h5 class="fw-bold mb-3">Delivery Log</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr><th>Customer</th><th>City</th><th>Channel</th><th>Status</th><th>Sent at</th></tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td>{{ log.customer.name }}</td>
+              <td class="text-muted small">{{ log.customer.city }}</td>
+              <td>{{ log.channel }}</td>
+              <td>
+                <span class="badge {% if log.status == 'sent' or log.status == 'delivered' %}bg-success{% elif log.status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                  {{ log.get_status_display }}
+                </span>
+              </td>
+              <td class="text-muted small">{{ log.sent_at|date:"H:i:s"|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted">No delivery records.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

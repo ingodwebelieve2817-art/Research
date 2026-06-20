@@ -1,0 +1,74 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Edit User - {{ admin_user.username }}{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'admin_dashboard:user_detail' admin_user.pk %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to User Profile</a>
+</div>
+
+<h1 class="h2 fw-bold text-gradient mb-4">Edit User Account: {{ admin_user.username }}</h1>
+
+<div class="glass-card">
+  <form method="POST" action="{% url 'admin_dashboard:user_edit' admin_user.pk %}">
+    {% csrf_token %}
+    
+    <!-- User Core Section -->
+    <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-person-fill me-2 text-primary"></i>Core Profile Information</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label for="email" class="form-label text-dimmed small">Email Address</label>
+        <input type="email" name="email" id="email" class="form-control bg-secondary border-0 text-white" value="{{ admin_user.email }}" required>
+      </div>
+      <div class="col-md-6">
+        <label for="phone" class="form-label text-dimmed small">Phone Number</label>
+        <input type="text" name="phone" id="phone" class="form-control bg-secondary border-0 text-white" value="{{ admin_user.phone }}">
+      </div>
+    </div>
+
+    <!-- Provider Profile Section (conditional) -->
+    {% if provider %}
+      <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-briefcase-fill me-2 text-primary"></i>Service Provider Business Details</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="business_name" class="form-label text-dimmed small">Business Name</label>
+          <input type="text" name="business_name" id="business_name" class="form-control bg-secondary border-0 text-white" value="{{ provider.business_name }}" required>
+        </div>
+        <div class="col-md-6">
+          <label for="category" class="form-label text-dimmed small">Service Category</label>
+          <select name="category" id="category" class="form-select bg-secondary border-0 text-white" required>
+            {% for cat_key, cat_val in categories %}
+              <option value="{{ cat_key }}" {% if provider.category == cat_key %}selected{% endif %}>{{ cat_val }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="city" class="form-label text-dimmed small">City</label>
+          <input type="text" name="city" id="city" class="form-control bg-secondary border-0 text-white" value="{{ provider.city }}" required>
+        </div>
+        <div class="col-md-6">
+          <label for="address" class="form-label text-dimmed small">Street Address</label>
+          <input type="text" name="address" id="address" class="form-control bg-secondary border-0 text-white" value="{{ provider.address }}">
+        </div>
+        <div class="col-md-6">
+          <label for="whatsapp_number" class="form-label text-dimmed small">WhatsApp Contact Number</label>
+          <input type="text" name="whatsapp_number" id="whatsapp_number" class="form-control bg-secondary border-0 text-white" value="{{ provider.whatsapp_number }}" required>
+        </div>
+        <div class="col-md-6">
+          <label for="website" class="form-label text-dimmed small">Website URL</label>
+          <input type="url" name="website" id="website" class="form-control bg-secondary border-0 text-white" value="{{ provider.website }}">
+        </div>
+        <div class="col-12">
+          <label for="facebook_page_url" class="form-label text-dimmed small">Facebook Page URL</label>
+          <input type="url" name="facebook_page_url" id="facebook_page_url" class="form-control bg-secondary border-0 text-white" value="{{ provider.facebook_page_url }}">
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="border-top border-secondary pt-3 mt-4 d-flex justify-content-end gap-2">
+      <a href="{% url 'admin_dashboard:user_detail' admin_user.pk %}" class="btn btn-outline-light btn-sm">Cancel</a>
+      <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-save me-1"></i>Save Changes</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

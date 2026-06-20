@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Pricing Plans{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="container text-center">
+    <h1 class="section-title mb-3">Pick Your <span class="text-gradient">Reach</span></h1>
+    <p class="subtitle">We find customers in your city who need your service and contact them for you — automatically.</p>
+  </div>
+</section>
+
+<section class="section-dark">
+  <div class="container">
+    <div class="row g-4 justify-content-center align-items-stretch pricing-grid">
+      {% for plan in plans %}
+      <div class="col-md-6 col-lg-4">
+        <div class="glass-card {% if plan.tier == 'pro' %}plan-popular{% endif %}">
+          {% if plan.tier == 'pro' %}<span class="badge-popular">Most Popular</span>{% endif %}
+
+          <div>
+            <div class="fs-4 fw-bold mb-2
+              {% if plan.tier == 'pro' %}text-gradient
+              {% elif plan.tier == 'max' %}text-warning
+              {% else %}text-muted{% endif %}">
+              {{ plan.name }}
+            </div>
+
+            <div class="price-text my-2">
+              {% if plan.price_monthly == 0 %}Free
+              {% else %}₹{{ plan.price_monthly }}<span class="fs-6 fw-normal text-muted">/mo</span>
+              {% endif %}
+            </div>
+
+            <ul class="feature-list">
+              <li>Reach <strong>{{ plan.reach_limit }}</strong> customers in your city</li>
+              <li class="{% if not plan.whatsapp_enabled %}disabled{% endif %}">
+                WhatsApp outreach
+              </li>
+              <li class="{% if not plan.facebook_enabled %}disabled{% endif %}">
+                Facebook outreach
+              </li>
+              <li>Auto-matching by city &amp; category</li>
+            </ul>
+
+            <p class="text-secondary small mb-4">{{ plan.description }}</p>
+          </div>
+
+          {% if user.is_authenticated %}
+            <a href="{% url 'subscriptions:subscribe' plan.pk %}"
+               class="btn {% if plan.tier == 'pro' %}btn-premium-primary{% else %}btn-premium-outline{% endif %} w-100 mt-3">
+              {% if plan.price_monthly == 0 %}Start Free{% else %}Subscribe — ₹{{ plan.price_monthly }}/mo{% endif %}
+            </a>
+          {% else %}
+            <a href="{% url 'accounts:register' %}" class="btn btn-premium-outline w-100 mt-3">Register to Subscribe</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <p class="text-center text-secondary small mt-5">
+      <i class="bi bi-shield-check me-1"></i>Outreach starts automatically after subscribing. Payments are secured by Razorpay.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

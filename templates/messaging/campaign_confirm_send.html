@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Send Campaign{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:520px">
+  <h2 class="fw-bold mb-4">Send Campaign</h2>
+  <div class="card shadow-sm border-0 p-4 mb-4">
+    <h5 class="fw-bold">{{ campaign.title }}</h5>
+    <p><span class="badge {% if campaign.channel == 'whatsapp' %}bg-success{% elif campaign.channel == 'facebook' %}bg-primary{% else %}bg-warning text-dark{% endif %}">{{ campaign.get_channel_display }}</span></p>
+    <blockquote class="blockquote border-start border-4 ps-3 text-muted">{{ campaign.message_body }}</blockquote>
+    <p class="mt-3 mb-0"><strong>Recipients:</strong> {{ campaign.total_recipients }} customers</p>
+  </div>
+  <div class="alert alert-warning small">
+    <i class="bi bi-exclamation-triangle me-1"></i>
+    This will immediately queue messages to all eligible opted-in customers. This action cannot be undone.
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-success px-5"><i class="bi bi-send me-1"></i>Send Now</button>
+      <a href="{% url 'messaging:campaign_list' %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
