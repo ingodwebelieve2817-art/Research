@@ -17,4 +17,5 @@ urlpatterns = [
     path("dashboard/", include("services.urls", namespace="services")),
     path("subscriptions/", include("subscriptions.urls", namespace="subscriptions")),
     path("outreach/", include("messaging.urls", namespace="messaging")),
+    path("api/v1/", include("localservices.api_urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

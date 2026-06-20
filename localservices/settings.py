@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     "customers",       # platform's own customer dataset
     "subscriptions",
     "messaging",
+    "projects",
+    "activities",
 ]
 
 MIDDLEWARE = [
@@ -54,10 +56,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "localservices.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Database Configuration
+# Fallback to SQLite if Supabase/Postgres environment variables are not set
+DB_HOST = os.getenv("DB_HOST")
+if DB_HOST:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME", "postgres"),
+            "USER": os.getenv("DB_USER", "postgres"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": DB_HOST,
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
+    }
+else:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.feehynfjkrgxhpbglxyv',
+        'PASSWORD': 'BR68eFN8YAp',
+        'HOST': 'aws-1-ap-southeast-2.pooler.supabase.com',
+        'PORT': '5432',
     }
 }
 
@@ -122,3 +143,18 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@localpro.app")
+
+# Django REST Framework Settings
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "accounts.authentication.SupabaseJWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+# Supabase Configurations
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "")

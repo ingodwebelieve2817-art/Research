@@ -6,3 +6,6 @@ redis==7.4.0
 requests==2.33.1
 Pillow==12.2.0
 razorpay==2.0.1
+psycopg2-binary>=2.9.12
+PyJWT>=2.8.0
+supabase>=2.5.1
