@@ -1,74 +1,88 @@
 {% extends "base.html" %}
 {% block title %}Subscription Active!{% endblock %}
 {% block content %}
-<div class="container py-5" style="max-width:560px">
+<div class="max-w-xl mx-auto px-4 py-16">
 
   <!-- Success banner -->
-  <div class="text-center mb-5">
-    <div class="display-1 text-success mb-3"><i class="bi bi-check-circle-fill"></i></div>
-    <h1 class="fw-bold">You're all set!</h1>
-    <p class="lead text-muted">Your <strong>{{ subscription.plan.name }}</strong> subscription is now active.</p>
+  <div class="text-center mb-10">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-3xl mb-4 shadow-glow">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+    <h1 class="font-heading text-3xl font-extrabold text-white mb-2">You're all set!</h1>
+    <p class="text-sm text-gray-400">Your <strong class="text-white font-medium">{{ subscription.plan.name }}</strong> subscription is now active.</p>
   </div>
 
   <!-- Subscription details card -->
-  <div class="card border-0 shadow p-4 mb-4">
-    <h5 class="fw-bold mb-3"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Subscription Details</h5>
-    <div class="row g-2">
-      <div class="col-6 text-muted small">Plan</div>
-      <div class="col-6 fw-semibold">{{ subscription.plan.name }}</div>
-
-      <div class="col-6 text-muted small">Customers reached</div>
-      <div class="col-6 fw-semibold">Up to {{ subscription.plan.reach_limit }}</div>
-
-      <div class="col-6 text-muted small">WhatsApp</div>
-      <div class="col-6">
-        {% if subscription.plan.whatsapp_enabled %}
-          <span class="badge bg-success">Included</span>
-        {% else %}
-          <span class="badge bg-secondary">Not included</span>
-        {% endif %}
+  <div class="glass p-6 rounded-2xl border border-white/5 mb-6">
+    <h5 class="font-heading text-base font-bold text-white mb-4 flex items-center gap-2">
+      <i class="bi bi-lightning-charge-fill text-amber-400"></i> Subscription Details
+    </h5>
+    
+    <div class="space-y-3.5 text-sm">
+      <div class="flex justify-between border-b border-white/5 pb-2">
+        <span class="text-gray-400">Plan</span>
+        <span class="text-white font-medium">{{ subscription.plan.name }}</span>
       </div>
-
-      <div class="col-6 text-muted small">Facebook</div>
-      <div class="col-6">
-        {% if subscription.plan.facebook_enabled %}
-          <span class="badge bg-primary">Included</span>
-        {% else %}
-          <span class="badge bg-secondary">Not included</span>
-        {% endif %}
+      <div class="flex justify-between border-b border-white/5 pb-2">
+        <span class="text-gray-400">Customers Reached</span>
+        <span class="text-white font-medium">Up to {{ subscription.plan.reach_limit }}</span>
       </div>
-
-      <div class="col-6 text-muted small">Started</div>
-      <div class="col-6 fw-semibold">{{ subscription.started_at|date:"M j, Y" }}</div>
-
-      <div class="col-6 text-muted small">Expires</div>
-      <div class="col-6 fw-semibold">
-        {% if subscription.expires_at %}{{ subscription.expires_at|date:"M j, Y" }}{% else %}—{% endif %}
+      <div class="flex justify-between border-b border-white/5 pb-2">
+        <span class="text-gray-400">WhatsApp Outreach</span>
+        <span>
+          {% if subscription.plan.whatsapp_enabled %}
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Included</span>
+          {% else %}
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-500 border border-gray-700">Not included</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="flex justify-between border-b border-white/5 pb-2">
+        <span class="text-gray-400">Facebook Outreach</span>
+        <span>
+          {% if subscription.plan.facebook_enabled %}
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Included</span>
+          {% else %}
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-800 text-gray-500 border border-gray-700">Not included</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class="flex justify-between border-b border-white/5 pb-2">
+        <span class="text-gray-400">Started</span>
+        <span class="text-white font-medium">{{ subscription.started_at|date:"M j, Y" }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-400">Expires</span>
+        <span class="text-white font-medium">
+          {% if subscription.expires_at %}{{ subscription.expires_at|date:"M j, Y" }}{% else %}—{% endif %}
+        </span>
       </div>
     </div>
   </div>
 
   <!-- What happens next -->
-  <div class="card border-0 shadow-sm p-4 mb-4 bg-light">
-    <h6 class="fw-bold mb-3"><i class="bi bi-send-fill text-primary me-2"></i>What happens next</h6>
-    <ol class="mb-0 small text-muted ps-3">
-      <li class="mb-2">We scan our customer database for people in <strong>{{ provider.city }}</strong> looking for <strong>{{ provider.get_category_display }}</strong> services.</li>
-      <li class="mb-2">We send them your business details via WhatsApp{% if subscription.plan.facebook_enabled %} and Facebook{% endif %}.</li>
-      <li>Interested customers will contact you directly at <strong>{{ provider.whatsapp_number }}</strong>.</li>
+  <div class="glass p-6 rounded-2xl border border-white/5 mb-6 bg-indigo-500/[0.02]">
+    <h6 class="font-heading text-sm font-bold text-indigo-400 mb-3 flex items-center gap-2">
+      <i class="bi bi-send-fill text-xs"></i> What happens next
+    </h6>
+    <ol class="list-decimal list-inside space-y-2.5 text-xs text-gray-400">
+      <li>We scan our customer database for people in <strong class="text-gray-200">{{ provider.city }}</strong> looking for <strong class="text-gray-200">{{ provider.get_category_display }}</strong> services.</li>
+      <li>We send them your business details via WhatsApp{% if subscription.plan.facebook_enabled %} and Facebook{% endif %}.</li>
+      <li>Interested customers will contact you directly at <strong class="text-gray-200">{{ provider.whatsapp_number }}</strong>.</li>
     </ol>
   </div>
 
-  <div class="alert alert-info small">
-    <i class="bi bi-envelope me-1"></i>
-    A confirmation email has been sent to <strong>{{ provider.user.email }}</strong>.
+  <div class="flex items-center gap-3 p-4 rounded-xl border bg-indigo-500/10 border-indigo-500/20 text-indigo-400 text-xs mb-8">
+    <i class="bi bi-envelope text-sm"></i>
+    <span>A confirmation email has been sent to <strong>{{ provider.user.email }}</strong>.</span>
   </div>
 
-  <div class="d-flex gap-3">
-    <a href="{% url 'services:dashboard' %}" class="btn btn-primary flex-fill">
-      <i class="bi bi-speedometer2 me-1"></i>Go to Dashboard
+  <div class="flex flex-col sm:flex-row gap-3">
+    <a href="{% url 'services:dashboard' %}" class="flex-1 py-3 text-center rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200 flex items-center justify-center gap-1.5">
+      <i class="bi bi-speedometer2"></i> Go to Dashboard
     </a>
-    <a href="{% url 'subscriptions:my_subscription' %}" class="btn btn-outline-secondary flex-fill">
-      <i class="bi bi-credit-card me-1"></i>Manage Plan
+    <a href="{% url 'subscriptions:my_subscription' %}" class="flex-1 py-3 text-center rounded-xl text-sm font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200 flex items-center justify-center gap-1.5">
+      <i class="bi bi-credit-card"></i> Manage Plan
     </a>
   </div>
 

@@ -1,25 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Business Profile{% endblock %}
 {% block content %}
-<div class="container py-5" style="max-width:680px">
-  <h2 class="fw-bold mb-1">Your Business Profile</h2>
-  <p class="text-muted mb-4">
-    This information is what we send to customers when we reach out on your behalf.
-    Make sure your <strong>city</strong> and <strong>category</strong> are correct —
-    we use them to find matching customers in our database.
-  </p>
-  <div class="card shadow-sm border-0 p-4">
-    <form method="post" enctype="multipart/form-data">
+<div class="max-w-xl mx-auto px-4 py-16">
+  <div class="text-center mb-8">
+    <h2 class="font-heading text-3xl font-bold text-white mb-2">Your Business Profile</h2>
+    <p class="text-xs text-gray-400 leading-relaxed max-w-sm mx-auto">
+      This information is what we send to customers when we reach out on your behalf.
+      Make sure your <strong>city</strong> and <strong>category</strong> are correct —
+      we use them to find matching customers in our database.
+    </p>
+  </div>
+
+  <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 shadow-xl">
+    <form method="post" enctype="multipart/form-data" class="space-y-5">
       {% csrf_token %}
       {% for field in form %}
-      <div class="mb-3">
-        <label class="form-label fw-semibold">{{ field.label }}</label>
+      <div class="flex flex-col">
+        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ field.label }}</label>
         {{ field }}
-        {% if field.help_text %}<div class="form-text text-muted">{{ field.help_text }}</div>{% endif %}
-        {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors }}</div>{% endif %}
+        {% if field.help_text %}
+          <div class="text-[11px] text-gray-500 mt-1 leading-relaxed">{{ field.help_text }}</div>
+        {% endif %}
+        {% if field.errors %}
+          <div class="text-xs text-rose-400 mt-1.5 font-medium">{{ field.errors }}</div>
+        {% endif %}
       </div>
       {% endfor %}
-      <button type="submit" class="btn btn-primary px-5 mt-2">Save & Continue to Plans</button>
+      
+      <div class="pt-4 border-t border-white/5">
+        <button type="submit" class="w-full py-3 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200">
+          Save &amp; Continue to Plans
+        </button>
+      </div>
     </form>
   </div>
 </div>

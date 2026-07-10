@@ -1,22 +1,39 @@
 {% extends "base.html" %}
 {% block title %}Register as Provider{% endblock %}
 {% block content %}
-<div class="container py-5" style="max-width:480px">
-  <div class="card shadow-sm border-0 p-4">
-    <h2 class="fw-bold mb-1">List Your Business</h2>
-    <p class="text-muted small mb-4">Create a free provider account and start connecting with customers.</p>
-    <form method="post">
+<div class="max-w-md mx-auto px-4 py-16 relative">
+  <!-- Spotlight Glow -->
+  <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-[350px] h-[200px] bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none"></div>
+
+  <div class="text-center mb-8 relative z-10">
+    <h2 class="font-heading text-3xl font-bold text-white mb-2">List Your Business</h2>
+    <p class="text-xs text-gray-400 max-w-xs mx-auto leading-relaxed">Create a free provider account and start connecting with customers.</p>
+  </div>
+
+  <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 shadow-2xl relative z-10">
+    <form method="post" class="space-y-5">
       {% csrf_token %}
       {% for field in form %}
-      <div class="mb-3">
-        <label class="form-label fw-semibold">{{ field.label }}</label>
+      <div class="flex flex-col">
+        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ field.label }}</label>
         {{ field }}
-        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+        {% if field.errors %}
+          <div class="text-xs text-rose-400 mt-1.5 font-medium">{{ field.errors }}</div>
+        {% endif %}
       </div>
       {% endfor %}
-      <button type="submit" class="btn btn-primary w-100">Create Account</button>
+      
+      <div class="pt-2">
+        <button type="submit" class="w-full py-3 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200">
+          Create Account
+        </button>
+      </div>
     </form>
-    <p class="text-center mt-3 small">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    
+    <div class="mt-6 pt-5 border-t border-white/5 text-center text-xs text-gray-500">
+      Already have an account? 
+      <a href="{% url 'accounts:login' %}" class="text-indigo-400 font-bold hover:text-indigo-300 transition-colors ml-1">Log in &rarr;</a>
+    </div>
   </div>
 </div>
 {% endblock %}

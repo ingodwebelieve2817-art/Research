@@ -1,50 +1,102 @@
 {% extends "base.html" %}
 {% block title %}{{ campaign.title }}{% endblock %}
 {% block content %}
-<div class="container py-5">
-  <div class="d-flex align-items-center gap-3 mb-4">
-    <a href="{% url 'messaging:campaign_list' %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
-    <h2 class="fw-bold mb-0">{{ campaign.title }}</h2>
-    <span class="badge {% if campaign.status == 'sent' %}bg-success{% elif campaign.status == 'failed' %}bg-danger{% elif campaign.status == 'sending' or campaign.status == 'queued' %}bg-warning text-dark{% else %}bg-secondary{% endif %} fs-6">{{ campaign.get_status_display }}</span>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div class="flex items-center gap-3">
+      <a href="{% url 'messaging:campaign_list' %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+      <h2 class="font-heading text-2xl font-bold text-white mb-0">{{ campaign.title }}</h2>
+    </div>
+    
+    <div>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+        {% if campaign.status == 'sent' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+        {% elif campaign.status == 'failed' %}bg-rose-500/10 text-rose-400 border border-rose-500/20
+        {% elif campaign.status == 'sending' or campaign.status == 'queued' %}bg-amber-500/10 text-amber-400 border border-amber-500/20
+        {% else %}bg-gray-800 text-gray-400 border border-gray-700{% endif %}">
+        {{ campaign.get_status_display }}
+      </span>
+    </div>
   </div>
 
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm p-4">
-        <h6 class="text-muted text-uppercase small mb-3">Campaign Info</h6>
-        <dl class="row mb-0">
-          <dt class="col-6">Channel</dt><dd class="col-6">{{ campaign.get_channel_display }}</dd>
-          <dt class="col-6">Recipients</dt><dd class="col-6">{{ campaign.total_recipients }}</dd>
-          <dt class="col-6">Sent</dt><dd class="col-6 text-success">{{ campaign.sent_count }}</dd>
-          <dt class="col-6">Failed</dt><dd class="col-6 text-danger">{{ campaign.failed_count }}</dd>
-          <dt class="col-6">Sent at</dt><dd class="col-6">{{ campaign.sent_at|date:"M j, Y H:i"|default:"—" }}</dd>
-        </dl>
-        <hr/>
-        <h6 class="text-muted text-uppercase small mb-2">Message</h6>
-        <p class="mb-0">{{ campaign.message_body }}</p>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column (Campaign Info) -->
+    <div class="lg:col-span-1 space-y-6">
+      <div class="glass p-6 rounded-2xl border border-white/5 space-y-4">
+        <h6 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/5 pb-3">Campaign Info</h6>
+        
+        <div class="space-y-3.5 text-sm">
+          <div class="flex justify-between border-b border-white/5 pb-2">
+            <span class="text-gray-400">Channel</span>
+            <span class="text-white font-medium">{{ campaign.get_channel_display }}</span>
+          </div>
+          <div class="flex justify-between border-b border-white/5 pb-2">
+            <span class="text-gray-400">Recipients</span>
+            <span class="text-white font-medium">{{ campaign.total_recipients }}</span>
+          </div>
+          <div class="flex justify-between border-b border-white/5 pb-2">
+            <span class="text-gray-400">Sent</span>
+            <span class="text-emerald-400 font-semibold">{{ campaign.sent_count }}</span>
+          </div>
+          <div class="flex justify-between border-b border-white/5 pb-2">
+            <span class="text-gray-400">Failed</span>
+            <span class="text-rose-400 font-semibold">{{ campaign.failed_count }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Sent At</span>
+            <span class="text-gray-300">{{ campaign.sent_at|date:"M j, Y H:i"|default:"—" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass p-6 rounded-2xl border border-white/5">
+        <h6 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/5 pb-3 mb-4">Message Body</h6>
+        <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{{ campaign.message_body }}</p>
       </div>
     </div>
-    <div class="col-md-8">
-      <h5 class="fw-bold mb-3">Delivery Log</h5>
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
-            <tr><th>Customer</th><th>Channel</th><th>Status</th><th>Sent at</th><th>Error</th></tr>
-          </thead>
-          <tbody>
-            {% for log in logs %}
-            <tr>
-              <td>{{ log.customer.name }}</td>
-              <td>{{ log.channel }}</td>
-              <td><span class="badge {% if log.status == 'delivered' or log.status == 'read' or log.status == 'sent' %}bg-success{% elif log.status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">{{ log.get_status_display }}</span></td>
-              <td class="text-muted small">{{ log.sent_at|date:"H:i:s"|default:"—" }}</td>
-              <td class="text-danger small">{{ log.error_message|truncatechars:50 }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" class="text-center text-muted">No delivery records yet.</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
+
+    <!-- Right Column (Delivery Logs Table) -->
+    <div class="lg:col-span-2 space-y-4">
+      <h5 class="font-heading text-lg font-bold text-white">Delivery Log</h5>
+      
+      <div class="overflow-hidden border border-white/5 rounded-2xl glass">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="border-b border-white/5 bg-gray-950/40">
+                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Customer</th>
+                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Channel</th>
+                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Sent At</th>
+                <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Error</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              {% for log in logs %}
+              <tr class="hover:bg-white/[0.01] transition-colors">
+                <td class="p-4 text-sm font-semibold text-white">{{ log.customer.name }}</td>
+                <td class="p-4 text-xs text-gray-300">{{ log.channel }}</td>
+                <td class="p-4 text-sm">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold 
+                    {% if log.status == 'delivered' or log.status == 'read' or log.status == 'sent' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                    {% elif log.status == 'failed' %}bg-rose-500/10 text-rose-400 border border-rose-500/20
+                    {% else %}bg-gray-800 text-gray-400 border border-gray-700{% endif %}">
+                    {{ log.get_status_display }}
+                  </span>
+                </td>
+                <td class="p-4 text-xs text-gray-400">{{ log.sent_at|date:"H:i:s"|default:"—" }}</td>
+                <td class="p-4 text-xs text-rose-400 text-right max-w-xs truncate" title="{{ log.error_message }}">{{ log.error_message|default:"—" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" class="p-12 text-center text-gray-500">No delivery records yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

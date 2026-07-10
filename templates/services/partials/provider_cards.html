@@ -1,0 +1,25 @@
+{% for p in providers %}
+<a href="{% url 'services:provider_detail' p.pk %}" class="glass p-6 rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 flex flex-col justify-between group">
+  <div>
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-lg font-bold">
+        {{ p.business_name|first|upper }}
+      </div>
+      <div>
+        <h5 class="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">{{ p.business_name }}</h5>
+        <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider">{{ p.get_category_display }}</span>
+      </div>
+    </div>
+    <p class="text-xs text-gray-450 line-clamp-3 mb-4">{{ p.description|default:"No description provided." }}</p>
+  </div>
+  <div class="flex justify-between items-center pt-3 border-t border-white/5 text-[11px] text-gray-400 font-medium">
+    <span><i class="bi bi-geo-alt mr-1 text-indigo-400"></i>{{ p.city }}</span>
+    <span class="text-indigo-400 font-bold group-hover:translate-x-1 transition-transform">View Profile &rarr;</span>
+  </div>
+</a>
+{% empty %}
+<div class="col-span-full py-12 text-center text-gray-500">
+  <i class="bi bi-search text-3xl block mb-3 opacity-30"></i>
+  <p class="text-sm">No service providers found matching your search.</p>
+</div>
+{% endfor %}

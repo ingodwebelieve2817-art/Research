@@ -1,35 +1,43 @@
 {% extends "base.html" %}
 {% block title %}Complete Payment — {{ plan.name }}{% endblock %}
 {% block content %}
-<div class="container py-5" style="max-width:520px">
-  <h2 class="fw-bold mb-1">Complete Your Payment</h2>
-  <p class="text-muted mb-4">You're subscribing to the <strong>{{ plan.name }}</strong> plan.</p>
+<div class="max-w-md mx-auto px-4 py-16">
+  <div class="text-center mb-8">
+    <h2 class="font-heading text-3xl font-bold text-white mb-2">Complete Payment</h2>
+    <p class="text-sm text-gray-400">You're subscribing to the <strong class="text-white">{{ plan.name }}</strong> plan.</p>
+  </div>
 
-  <div class="card border-0 shadow-sm p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <span class="fw-semibold fs-5">{{ plan.name }} Plan</span>
-      <span class="fs-4 fw-bold text-primary">₹{{ plan.price_monthly }}<small class="fs-6 text-muted fw-normal">/mo</small></span>
+  <div class="glass p-6 rounded-2xl border border-white/5 mb-6">
+    <div class="flex justify-between items-center mb-6">
+      <span class="font-semibold text-gray-200 text-lg">{{ plan.name }} Plan</span>
+      <span class="text-2xl font-extrabold text-indigo-400">₹{{ plan.price_monthly }}<span class="text-xs text-gray-500 font-normal">/mo</span></span>
     </div>
-    <ul class="list-unstyled small text-muted mb-0">
-      <li class="mb-1"><i class="bi bi-people-fill text-primary me-2"></i>Reach up to <strong>{{ plan.reach_limit }}</strong> customers</li>
-      <li class="mb-1">
-        <i class="bi bi-whatsapp {% if plan.whatsapp_enabled %}text-success{% else %}text-muted{% endif %} me-2"></i>
-        WhatsApp outreach {% if not plan.whatsapp_enabled %}<span class="text-muted">(not included)</span>{% endif %}
+    
+    <ul class="space-y-3">
+      <li class="flex items-center gap-2.5 text-sm text-gray-300">
+        <i class="bi bi-people-fill text-indigo-400"></i> Reach up to <strong>{{ plan.reach_limit }}</strong> customers
       </li>
-      <li>
-        <i class="bi bi-facebook {% if plan.facebook_enabled %}text-primary{% else %}text-muted{% endif %} me-2"></i>
-        Facebook outreach {% if not plan.facebook_enabled %}<span class="text-muted">(not included)</span>{% endif %}
+      <li class="flex items-center gap-2.5 text-sm text-gray-300">
+        <i class="bi bi-whatsapp {% if plan.whatsapp_enabled %}text-emerald-400{% else %}text-gray-600 line-through{% endif %}"></i>
+        WhatsApp outreach {% if not plan.whatsapp_enabled %}<span class="text-gray-500 text-xs">(not included)</span>{% endif %}
+      </li>
+      <li class="flex items-center gap-2.5 text-sm text-gray-300">
+        <i class="bi bi-facebook {% if plan.facebook_enabled %}text-indigo-400{% else %}text-gray-600 line-through{% endif %}"></i>
+        Facebook outreach {% if not plan.facebook_enabled %}<span class="text-gray-500 text-xs">(not included)</span>{% endif %}
       </li>
     </ul>
   </div>
 
-  <button id="pay-btn" class="btn btn-primary w-100 btn-lg mb-3">
-    <i class="bi bi-credit-card me-2"></i>Pay ₹{{ plan.price_monthly }} Now
+  <button id="pay-btn" class="w-full py-3.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-200 mb-3 flex items-center justify-center gap-2">
+    <i class="bi bi-credit-card"></i> Pay ₹{{ plan.price_monthly }} Now
   </button>
-  <a href="{% url 'subscriptions:plans' %}" class="btn btn-outline-secondary w-100">Cancel</a>
+  
+  <a href="{% url 'subscriptions:plans' %}" class="w-full block text-center py-3.5 rounded-xl text-sm font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+    Cancel
+  </a>
 
-  <p class="text-center text-muted small mt-3">
-    <i class="bi bi-shield-lock me-1"></i>Secured by Razorpay
+  <p class="text-center text-xs text-gray-500 mt-6 flex items-center justify-center gap-1">
+    <i class="bi bi-shield-lock text-indigo-400"></i> Secured by Razorpay
   </p>
 </div>
 
@@ -54,7 +62,7 @@
       name: "{{ provider.user.get_full_name|default:provider.user.username }}",
       email: "{{ provider.user.email }}",
     },
-    theme: { color: "#0d6efd" },
+    theme: { color: "#6366f1" },
     handler: function(response) {
       document.getElementById("rzp_order_id").value = response.razorpay_order_id;
       document.getElementById("rzp_payment_id").value = response.razorpay_payment_id;
@@ -63,8 +71,9 @@
     },
     modal: {
       ondismiss: function() {
-        document.getElementById("pay-btn").disabled = false;
-        document.getElementById("pay-btn").innerHTML = '<i class="bi bi-credit-card me-2"></i>Pay ₹{{ plan.price_monthly }} Now';
+        var btn = document.getElementById("pay-btn");
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-credit-card"></i> Pay ₹{{ plan.price_monthly }} Now';
       }
     }
   };
@@ -73,8 +82,9 @@
   document.getElementById("pay-btn").addEventListener("click", function(e) {
     e.preventDefault();
     this.disabled = true;
-    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Opening payment...';
+    this.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Opening payment...';
     rzp.open();
   });
 </script>
 {% endblock %}
+

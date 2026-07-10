@@ -1,40 +1,80 @@
 {% extends "base.html" %}
 {% block title %}Customers{% endblock %}
 {% block content %}
-<div class="container py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
     <div>
-      <h2 class="fw-bold mb-0">Customers</h2>
-      <small class="text-muted">{{ customer_count }} of {{ customer_limit }} slots used</small>
+      <h2 class="font-heading text-3xl font-bold text-white mb-1">Customers</h2>
+      <p class="text-xs text-gray-400 font-semibold">{{ customer_count }} of {{ customer_limit }} slots used</p>
     </div>
-    {% if customer_count < customer_limit %}
-    <a href="{% url 'services:customer_add' %}" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>Add Customer</a>
-    {% else %}
-    <a href="{% url 'subscriptions:plans' %}" class="btn btn-warning"><i class="bi bi-arrow-up-circle me-1"></i>Upgrade to Add More</a>
-    {% endif %}
+    
+    <div>
+      {% if customer_count < customer_limit %}
+        <a href="{% url 'services:customer_add' %}" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200">
+          <i class="bi bi-person-plus"></i> Add Customer
+        </a>
+      {% else %}
+        <a href="{% url 'subscriptions:plans' %}" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold bg-amber-600 hover:bg-amber-500 text-white hover:shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all duration-200">
+          <i class="bi bi-arrow-up-circle"></i> Upgrade to Add More
+        </a>
+      {% endif %}
+    </div>
   </div>
-  <div class="progress mb-4" style="height:8px">
-    <div class="progress-bar {% if customer_count >= customer_limit %}bg-danger{% endif %}" style="width:{% widthratio customer_count customer_limit 100 %}%"></div>
+
+  <!-- Slots usage progress bar -->
+  <div class="w-full h-2 bg-gray-900 border border-white/5 rounded-full overflow-hidden mb-8">
+    <div class="h-full rounded-full transition-all duration-300 {% if customer_count >= customer_limit %}bg-rose-500{% else %}bg-indigo-500{% endif %}" style="width: {% widthratio customer_count customer_limit 100 %}%"></div>
   </div>
-  <div class="card border-0 shadow-sm">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
-          <tr><th>Name</th><th>Phone</th><th>WhatsApp</th><th>Email</th><th>Opted-in WA</th><th>Opted-in FB</th><th>Actions</th></tr>
+
+  <!-- Customers Table -->
+  <div class="overflow-hidden border border-white/5 rounded-2xl glass">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-white/5 bg-gray-950/40">
+            <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Name</th>
+            <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Phone</th>
+            <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">WhatsApp</th>
+            <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Email</th>
+            <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center">Opted-in WA</th>
+            <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center">Opted-in FB</th>
+            <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+          </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-white/5">
           {% for c in customers %}
-          <tr>
-            <td class="fw-semibold">{{ c.name }}</td>
-            <td>{{ c.phone }}</td>
-            <td>{{ c.whatsapp_number|default:"—" }}</td>
-            <td>{{ c.email|default:"—" }}</td>
-            <td>{% if c.opted_in_whatsapp %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}</td>
-            <td>{% if c.opted_in_facebook %}<i class="bi bi-check-circle-fill text-primary"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}</td>
-            <td><a href="{% url 'services:customer_edit' c.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a></td>
+          <tr class="hover:bg-white/[0.01] transition-colors">
+            <td class="p-4 text-sm font-semibold text-white">{{ c.name }}</td>
+            <td class="p-4 text-sm text-gray-300">{{ c.phone }}</td>
+            <td class="p-4 text-sm text-gray-300">{{ c.whatsapp_number|default:"—" }}</td>
+            <td class="p-4 text-sm text-gray-300">{{ c.email|default:"—" }}</td>
+            <td class="p-4 text-sm text-center">
+              {% if c.opted_in_whatsapp %}
+                <span class="text-emerald-400" title="Yes"><i class="bi bi-check-circle-fill"></i></span>
+              {% else %}
+                <span class="text-gray-600" title="No"><i class="bi bi-x-circle-fill"></i></span>
+              {% endif %}
+            </td>
+            <td class="p-4 text-sm text-center">
+              {% if c.opted_in_facebook %}
+                <span class="text-indigo-400" title="Yes"><i class="bi bi-check-circle-fill"></i></span>
+              {% else %}
+                <span class="text-gray-600" title="No"><i class="bi bi-x-circle-fill"></i></span>
+              {% endif %}
+            </td>
+            <td class="p-4 text-sm text-right">
+              <a href="{% url 'services:customer_edit' c.pk %}" class="inline-block px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+                Edit
+              </a>
+            </td>
           </tr>
           {% empty %}
-          <tr><td colspan="7" class="text-center py-5 text-muted">No customers yet.</td></tr>
+          <tr>
+            <td colspan="7" class="p-12 text-center text-gray-500">
+              <i class="bi bi-people text-3xl d-block mb-3 opacity-30"></i>
+              <p class="text-sm">No customers added yet.</p>
+            </td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>

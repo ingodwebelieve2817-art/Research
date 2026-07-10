@@ -3,71 +3,87 @@
 {% block title %}Edit User - {{ admin_user.username }}{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-  <a href="{% url 'admin_dashboard:user_detail' admin_user.pk %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to User Profile</a>
+<div class="mb-6">
+  <a href="{% url 'admin_dashboard:user_detail' admin_user.pk %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+    <i class="bi bi-arrow-left"></i> Back to User Profile
+  </a>
 </div>
 
-<h1 class="h2 fw-bold text-gradient mb-4">Edit User Account: {{ admin_user.username }}</h1>
+<div class="mb-8">
+  <h1 class="font-heading text-3xl font-extrabold text-white mb-1.5">Edit User Account: {{ admin_user.username }}</h1>
+</div>
 
-<div class="glass-card">
-  <form method="POST" action="{% url 'admin_dashboard:user_edit' admin_user.pk %}">
+<div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 shadow-2xl">
+  <form method="POST" action="{% url 'admin_dashboard:user_edit' admin_user.pk %}" class="space-y-6">
     {% csrf_token %}
     
     <!-- User Core Section -->
-    <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-person-fill me-2 text-primary"></i>Core Profile Information</h5>
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <label for="email" class="form-label text-dimmed small">Email Address</label>
-        <input type="email" name="email" id="email" class="form-control bg-secondary border-0 text-white" value="{{ admin_user.email }}" required>
-      </div>
-      <div class="col-md-6">
-        <label for="phone" class="form-label text-dimmed small">Phone Number</label>
-        <input type="text" name="phone" id="phone" class="form-control bg-secondary border-0 text-white" value="{{ admin_user.phone }}">
+    <div>
+      <h5 class="font-heading text-base font-bold text-white border-b border-white/5 pb-3 mb-4 flex items-center gap-2">
+        <i class="bi bi-person-fill text-indigo-400"></i> Core Profile Information
+      </h5>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col">
+          <label for="email" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
+          <input type="email" name="email" id="email" value="{{ admin_user.email }}" required>
+        </div>
+        <div class="flex flex-col">
+          <label for="phone" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
+          <input type="text" name="phone" id="phone" value="{{ admin_user.phone }}">
+        </div>
       </div>
     </div>
 
     <!-- Provider Profile Section (conditional) -->
     {% if provider %}
-      <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2"><i class="bi bi-briefcase-fill me-2 text-primary"></i>Service Provider Business Details</h5>
-      <div class="row g-3 mb-4">
-        <div class="col-md-6">
-          <label for="business_name" class="form-label text-dimmed small">Business Name</label>
-          <input type="text" name="business_name" id="business_name" class="form-control bg-secondary border-0 text-white" value="{{ provider.business_name }}" required>
-        </div>
-        <div class="col-md-6">
-          <label for="category" class="form-label text-dimmed small">Service Category</label>
-          <select name="category" id="category" class="form-select bg-secondary border-0 text-white" required>
-            {% for cat_key, cat_val in categories %}
-              <option value="{{ cat_key }}" {% if provider.category == cat_key %}selected{% endif %}>{{ cat_val }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="city" class="form-label text-dimmed small">City</label>
-          <input type="text" name="city" id="city" class="form-control bg-secondary border-0 text-white" value="{{ provider.city }}" required>
-        </div>
-        <div class="col-md-6">
-          <label for="address" class="form-label text-dimmed small">Street Address</label>
-          <input type="text" name="address" id="address" class="form-control bg-secondary border-0 text-white" value="{{ provider.address }}">
-        </div>
-        <div class="col-md-6">
-          <label for="whatsapp_number" class="form-label text-dimmed small">WhatsApp Contact Number</label>
-          <input type="text" name="whatsapp_number" id="whatsapp_number" class="form-control bg-secondary border-0 text-white" value="{{ provider.whatsapp_number }}" required>
-        </div>
-        <div class="col-md-6">
-          <label for="website" class="form-label text-dimmed small">Website URL</label>
-          <input type="url" name="website" id="website" class="form-control bg-secondary border-0 text-white" value="{{ provider.website }}">
-        </div>
-        <div class="col-12">
-          <label for="facebook_page_url" class="form-label text-dimmed small">Facebook Page URL</label>
-          <input type="url" name="facebook_page_url" id="facebook_page_url" class="form-control bg-secondary border-0 text-white" value="{{ provider.facebook_page_url }}">
+      <div class="pt-6 border-t border-white/5">
+        <h5 class="font-heading text-base font-bold text-white border-b border-white/5 pb-3 mb-4 flex items-center gap-2">
+          <i class="bi bi-briefcase-fill text-indigo-400"></i> Service Provider Business Details
+        </h5>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col">
+            <label for="business_name" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Business Name</label>
+            <input type="text" name="business_name" id="business_name" value="{{ provider.business_name }}" required>
+          </div>
+          <div class="flex flex-col">
+            <label for="category" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Service Category</label>
+            <select name="category" id="category" required>
+              {% for cat_key, cat_val in categories %}
+                <option value="{{ cat_key }}" {% if provider.category == cat_key %}selected{% endif %}>{{ cat_val }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="flex flex-col">
+            <label for="city" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">City</label>
+            <input type="text" name="city" id="city" value="{{ provider.city }}" required>
+          </div>
+          <div class="flex flex-col">
+            <label for="address" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Street Address</label>
+            <input type="text" name="address" id="address" value="{{ provider.address }}">
+          </div>
+          <div class="flex flex-col">
+            <label for="whatsapp_number" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">WhatsApp Contact Number</label>
+            <input type="text" name="whatsapp_number" id="whatsapp_number" value="{{ provider.whatsapp_number }}" required>
+          </div>
+          <div class="flex flex-col">
+            <label for="website" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Website URL</label>
+            <input type="url" name="website" id="website" value="{{ provider.website }}">
+          </div>
+          <div class="flex flex-col md:col-span-2">
+            <label for="facebook_page_url" class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Facebook Page URL</label>
+            <input type="url" name="facebook_page_url" id="facebook_page_url" value="{{ provider.facebook_page_url }}">
+          </div>
         </div>
       </div>
     {% endif %}
 
-    <div class="border-top border-secondary pt-3 mt-4 d-flex justify-content-end gap-2">
-      <a href="{% url 'admin_dashboard:user_detail' admin_user.pk %}" class="btn btn-outline-light btn-sm">Cancel</a>
-      <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-save me-1"></i>Save Changes</button>
+    <div class="pt-6 border-t border-white/5 flex justify-end gap-3">
+      <a href="{% url 'admin_dashboard:user_detail' admin_user.pk %}" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+        Cancel
+      </a>
+      <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200 flex items-center gap-1.5">
+        <i class="bi bi-save"></i> Save Changes
+      </button>
     </div>
   </form>
 </div>

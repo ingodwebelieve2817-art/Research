@@ -73,15 +73,11 @@ if DB_HOST:
     }
 else:
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.feehynfjkrgxhpbglxyv',
-        'PASSWORD': 'BR68eFN8YAp',
-        'HOST': 'aws-1-ap-southeast-2.pooler.supabase.com',
-        'PORT': '5432',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
 
 AUTH_USER_MODEL = "accounts.User"
 

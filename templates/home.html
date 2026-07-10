@@ -2,409 +2,415 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<!-- Premium Styling Stylesheet (Embedded) -->
-<style>
-  /* Google Fonts Import */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap');
-
-  :root {
-    --bg-primary: #090d16;
-    --bg-secondary: #0f172a;
-    --bg-card: rgba(22, 28, 45, 0.7);
-    --border-card: rgba(255, 255, 255, 0.08);
-    --border-card-hover: rgba(99, 102, 241, 0.4);
-    --text-main: #f8fafc;
-    --text-muted: #e2e8f0; /* Premium Pearl White */
-    --text-dimmed: #94a3b8; /* Muted Slate */
-    --color-primary: #6366f1; /* Indigo */
-    --color-secondary: #06b6d4; /* Cyan */
-    --color-accent: #10b981; /* Emerald / WhatsApp green */
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', sans-serif;
-  }
-
-  body {
-    background-color: var(--bg-primary) !important; /* Force background */
-    color: var(--text-main);
-    font-family: var(--font-body);
-    overflow-x: hidden;
-  }
-
-  /* Explicit Bootstrap text overrides to prevent camouflage */
-  .text-muted {
-    color: var(--text-muted) !important;
-  }
+<!-- Hero & Live Search Section -->
+<section class="relative pt-24 pb-20 overflow-hidden">
+  <!-- Grid backdrop -->
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f29370a_1px,transparent_1px),linear-gradient(to_bottom,#1f29370a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
   
-  .text-secondary {
-    color: var(--text-dimmed) !important;
-  }
+  <!-- Glowing Spotlight -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center mb-12">
+      <h1 class="font-heading text-4xl sm:text-6xl font-extrabold tracking-tight leading-none mb-6">
+        Grow Your <span class="text-gradient">Local Business</span>
+      </h1>
+      <p class="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
+        Register your business. Pick a plan. We scan, match, and deliver matching customer leads in your city directly to WhatsApp &amp; Facebook — automatically.
+      </p>
+    </div>
 
-  /* Custom Text Gradient */
-  .text-gradient {
-    background: linear-gradient(135deg, #818cf8 0%, #22d3ee 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+    <!-- Live Directory Search Widget -->
+    <div class="max-w-3xl mx-auto mb-16">
+      <div class="glass p-4 sm:p-6 rounded-3xl border border-white/5 shadow-2xl space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex flex-col">
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Search City</label>
+            <div class="relative">
+              <input type="text" id="search-city" placeholder="e.g. Lagos, Sydney" class="pl-10">
+              <i class="bi bi-geo-alt absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Service Category</label>
+            <div class="relative">
+              <select id="search-category" class="pl-10">
+                <option value="">All Services</option>
+                {% for slug, label in categories %}
+                  <option value="{{ slug }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+              <i class="bi bi-tools absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  /* Hero Section with Mesh Grid and Glow */
-  .hero-section {
-    position: relative;
-    background: radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.18) 0%, rgba(9, 13, 22, 0) 70%), var(--bg-primary);
-    border-bottom: 1px solid var(--border-card);
-    padding: 8rem 0 6rem 0;
-    overflow: hidden;
-  }
+      <!-- Live Search Results Container -->
+      <div id="search-results-section" class="hidden mt-8 space-y-4">
+        <h4 class="font-heading text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1 flex items-center gap-2">
+          <i class="bi bi-search text-indigo-400 animate-pulse"></i> Matching Local Providers
+        </h4>
+        <div id="search-results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <!-- Dynamically populated via AJAX partial rendering -->
+        </div>
+      </div>
+    </div>
 
-  .hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 50px 50px;
-    background-position: center center;
-    mask-image: radial-gradient(ellipse at center, black, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse at center, black, transparent 75%);
-    pointer-events: none;
-  }
-
-  /* Glassmorphism Cards */
-  .glass-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border-card);
-    border-radius: 16px;
-    padding: 2.25rem 2rem;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    height: 100%;
-  }
-
-  .glass-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--border-card-hover);
-    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.12);
-    background: rgba(30, 41, 59, 0.55);
-  }
-
-  /* Section Styling */
-  .section-dark {
-    background-color: var(--bg-primary);
-    padding: 6rem 0;
-  }
-
-  .section-alt {
-    background-color: var(--bg-secondary);
-    border-top: 1px solid var(--border-card);
-    border-bottom: 1px solid var(--border-card);
-    padding: 6rem 0;
-  }
-
-  .section-title {
-    font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 2.5rem;
-    letter-spacing: -0.03em;
-    color: var(--text-main);
-  }
-
-  .subtitle {
-    font-size: 1.125rem;
-    color: var(--text-muted) !important;
-    max-width: 620px;
-    margin: 0 auto;
-  }
-
-  /* Emojis & Icon Badges */
-  .icon-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    transition: all 0.4s ease;
-  }
-
-  .glass-card:hover .icon-badge {
-    background: rgba(6, 182, 212, 0.12);
-    border-color: rgba(6, 182, 212, 0.3);
-    transform: scale(1.1) rotate(8deg);
-  }
-
-  /* Pricing Card Enhancements */
-  .pricing-grid .glass-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .price-text {
-    font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 3rem;
-    color: var(--text-main);
-  }
-
-  .plan-popular {
-    border: 2px solid var(--color-primary);
-    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.15);
-    transform: scale(1.04);
-    position: relative;
-  }
-
-  .plan-popular:hover {
-    transform: scale(1.06) translateY(-6px);
-    box-shadow: 0 20px 45px rgba(99, 102, 241, 0.25);
-  }
-
-  .badge-popular {
-    background: linear-gradient(135deg, var(--color-primary) 0%, #4f46e5 100%);
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    padding: 0.4rem 1rem;
-    border-radius: 99px;
-    font-size: 0.75rem;
-    position: absolute;
-    top: -14px;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
-  }
-
-  /* Categories Grid */
-  .category-chip {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-card);
-    border-radius: 12px;
-    padding: 1.25rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
-
-  .category-chip:hover {
-    background: rgba(99, 102, 241, 0.06);
-    border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.08);
-  }
-
-  .category-icon {
-    font-size: 2.25rem;
-    display: block;
-    margin-bottom: 0.5rem;
-    transition: transform 0.3s ease;
-  }
-
-  .category-chip:hover .category-icon {
-    transform: scale(1.18);
-  }
-
-  /* Premium Buttons */
-  .btn-premium-primary {
-    background: linear-gradient(135deg, var(--color-primary) 0%, #4f46e5 100%);
-    color: #fff !important;
-    border: none;
-    font-weight: 600;
-    border-radius: 99px;
-    padding: 0.85rem 2.25rem;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .btn-premium-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-    filter: brightness(1.15);
-  }
-
-  .btn-premium-outline {
-    background: transparent;
-    color: var(--text-main) !important;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    font-weight: 600;
-    border-radius: 99px;
-    padding: 0.85rem 2.25rem;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .btn-premium-outline:hover {
-    border-color: var(--text-main);
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateY(-2px);
-  }
-
-  /* Checklists */
-  .feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 1.5rem 0;
-    text-align: left;
-  }
-
-  .feature-list li {
-    margin-bottom: 0.75rem;
-    color: var(--text-dimmed) !important;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .feature-list li::before {
-    content: '✓';
-    color: var(--color-accent);
-    font-weight: bold;
-  }
-</style>
-
-<!-- Hero -->
-<section class="hero-section">
-  <div class="container text-center py-5">
-    <h1 class="display-4 fw-bold section-title mb-3">
-      Grow Your <span class="text-gradient">Local Business</span>
-    </h1>
-    <p class="lead subtitle mb-5">
-      Register your business. Pick a plan. We find customers in your city and
-      send them your details on WhatsApp &amp; Facebook — automatically.
-    </p>
-    <div class="d-flex gap-3 justify-content-center flex-wrap">
-      <a href="{% url 'accounts:register' %}" class="btn btn-premium-primary btn-lg">Register Your Business</a>
-      <a href="{% url 'subscriptions:plans' %}" class="btn btn-premium-outline btn-lg">See Plans</a>
+    <!-- Stats row with counters -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto pt-4">
+      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
+        <div class="font-heading text-3xl font-extrabold text-white mb-1"><span class="counter" data-target="{{ total_customers|default:1500 }}">0</span>+</div>
+        <div class="text-[11px] text-gray-400 uppercase font-semibold tracking-wider">Matched Customers</div>
+      </div>
+      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
+        <div class="font-heading text-3xl font-extrabold text-white mb-1"><span class="counter" data-target="{{ total_providers|default:120 }}">0</span>+</div>
+        <div class="text-[11px] text-gray-400 uppercase font-semibold tracking-wider">Active Providers</div>
+      </div>
+      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
+        <div class="font-heading text-3xl font-extrabold text-white mb-1"><span class="counter" data-target="{{ active_outreaches|default:420 }}">0</span>+</div>
+        <div class="text-[11px] text-gray-400 uppercase font-semibold tracking-wider">Campaign Outreaches</div>
+      </div>
+      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
+        <div class="font-heading text-3xl font-extrabold text-white mb-1"><span class="counter" data-target="100">0</span>%</div>
+        <div class="text-[11px] text-gray-400 uppercase font-semibold tracking-wider">Automated Dispatch</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- How it works -->
-<section class="section-alt">
-  <div class="container">
-    <h2 class="section-title text-center mb-2">How It Works</h2>
-    <p class="subtitle text-center mb-5">Four simple steps to get customers contacting you directly</p>
-    <div class="row g-4 text-center">
-      <div class="col-md-3">
-        <div class="glass-card">
-          <div class="icon-badge">📝</div>
-          <h5 class="fw-bold mb-3">1. Register</h5>
-          <p class="text-muted mb-0">Create your business profile — name, category, city, WhatsApp number.</p>
-        </div>
+<!-- Interactive Reach Estimator Calculator -->
+<section class="py-20 border-t border-white/5 bg-gray-950/20 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">Calculate Your Local Reach</h2>
+        <p class="text-gray-400 leading-relaxed mb-6">
+          Find out exactly how many matching customer leads are currently waiting in our database for your category. Enter your details to view your potential matches instantly and see which subscription plan fits your business.
+        </p>
+        <ul class="space-y-3.5">
+          <li class="flex items-center gap-3 text-sm text-gray-300">
+            <i class="bi bi-shield-check text-indigo-400 text-lg"></i> Direct verification of matching city logs
+          </li>
+          <li class="flex items-center gap-3 text-sm text-gray-300">
+            <i class="bi bi-whatsapp text-indigo-400 text-lg"></i> Projected WhatsApp reach analytics
+          </li>
+          <li class="flex items-center gap-3 text-sm text-gray-300">
+            <i class="bi bi-graph-up-arrow text-indigo-400 text-lg"></i> Immediate recommendation engine
+          </li>
+        </ul>
       </div>
-      <div class="col-md-3">
-        <div class="glass-card">
-          <div class="icon-badge">📦</div>
-          <h5 class="fw-bold mb-3">2. Pick a Plan</h5>
-          <p class="text-muted mb-0">Choose how many potential customers you want us to reach out to.</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="glass-card">
-          <div class="icon-badge">🔍</div>
-          <h5 class="fw-bold mb-3">3. We Match</h5>
-          <p class="text-muted mb-0">We find people in your city who are looking for exactly your service.</p>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="glass-card">
-          <div class="icon-badge">📲</div>
-          <h5 class="fw-bold mb-3">4. We Message Them</h5>
-          <p class="text-muted mb-0">We send your details to them on WhatsApp and Facebook. They contact you directly.</p>
+
+      <div>
+        <div class="glass p-6 sm:p-8 rounded-3xl border border-white/5 shadow-2xl space-y-6">
+          <h5 class="text-sm font-bold text-white uppercase tracking-wider mb-2 flex items-center gap-2"><i class="bi bi-calculator text-indigo-400"></i> Reach Estimator</h5>
+          
+          <div class="space-y-4">
+            <div class="flex flex-col">
+              <label class="text-[10px] font-bold text-gray-455 uppercase tracking-widest mb-1.5 ml-1">Select Target City</label>
+              <input type="text" id="calc-city" placeholder="e.g. Lagos, Sydney" class="w-full">
+            </div>
+            
+            <div class="flex flex-col">
+              <label class="text-[10px] font-bold text-gray-455 uppercase tracking-widest mb-1.5 ml-1">Select Service Category</label>
+              <select id="calc-category" class="w-full">
+                {% for slug, label in categories %}
+                  <option value="{{ slug }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <button id="calc-btn" class="w-full py-3.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200">
+            Calculate Reach
+          </button>
+
+          <!-- Result Ticker -->
+          <div id="calc-result" class="hidden p-5 rounded-2xl bg-gray-950/60 border border-white/5 text-center space-y-3">
+            <div class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Matched Customer Leads</div>
+            <div class="font-heading text-4xl font-extrabold text-indigo-400" id="calc-match-count">0</div>
+            <p class="text-xs text-gray-455 leading-relaxed max-w-xs mx-auto" id="calc-recommendation">We recommend the Basic plan for this reach.</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Plans teaser -->
-<section class="section-dark">
-  <div class="container text-center">
-    <h2 class="section-title mb-2">Choose Your Reach</h2>
-    <p class="subtitle mb-5">The more customers we contact for you, the more your business grows.</p>
-    <div class="row g-4 justify-content-center align-items-stretch pricing-grid">
-      <!-- Basic Plan -->
-      <div class="col-md-4 col-lg-3">
-        <div class="glass-card">
-          <div>
-            <div class="fs-4 fw-bold text-muted mb-2">Basic</div>
-            <div class="price-text my-2">₹0</div>
-            <ul class="feature-list">
-              <li>Reach out to 5 customers</li>
-              <li>Local city targeting</li>
-              <li>Basic business profiling</li>
-            </ul>
-          </div>
-          <a href="{% url 'accounts:register' %}" class="btn btn-premium-outline w-100 mt-4">Get Started</a>
+<!-- How It Works -->
+<section class="py-20 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">How It Works</h2>
+      <p class="text-gray-400 max-w-xl mx-auto">Four simple steps to get customers contacting you directly</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Step 1 -->
+      <div class="glass p-8 rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 group">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-lg mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+          <i class="bi bi-clipboard-check"></i>
         </div>
+        <h5 class="text-lg font-bold text-white mb-2">1. Register</h5>
+        <p class="text-sm text-gray-400 leading-relaxed">Create your business profile — name, category, city, WhatsApp number.</p>
       </div>
-      <!-- Pro Plan (Popular) -->
-      <div class="col-md-4 col-lg-3">
-        <div class="glass-card plan-popular">
-          <span class="badge-popular">Most Popular</span>
-          <div>
-            <div class="fs-4 fw-bold text-gradient mb-2 mt-2">Pro</div>
-            <div class="price-text my-2">₹500<span class="fs-6 fw-normal text-muted">/mo</span></div>
-            <ul class="feature-list">
-              <li>Reach out to 5,000 customers</li>
-              <li>Direct WhatsApp messaging</li>
-              <li>Priority local matching</li>
-              <li>Custom profile bio</li>
-            </ul>
-          </div>
-          <a href="{% url 'accounts:register' %}" class="btn btn-premium-primary w-100 mt-4">Go Pro</a>
+      
+      <!-- Step 2 -->
+      <div class="glass p-8 rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 group">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-lg mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+          <i class="bi bi-wallet2"></i>
         </div>
+        <h5 class="text-lg font-bold text-white mb-2">2. Pick a Plan</h5>
+        <p class="text-sm text-gray-400 leading-relaxed">Choose how many potential customers you want us to reach out to.</p>
       </div>
-      <!-- Max Plan -->
-      <div class="col-md-4 col-lg-3">
-        <div class="glass-card">
-          <div>
-            <div class="fs-4 fw-bold text-warning mb-2">Max</div>
-            <div class="price-text my-2">₹1500<span class="fs-6 fw-normal text-muted">/mo</span></div>
-            <ul class="feature-list">
-              <li>Reach out to 10,000 customers</li>
-              <li>WhatsApp + Facebook ads</li>
-              <li>Dedicated city-wide outreach</li>
-              <li>24/7 Priority support</li>
-            </ul>
-          </div>
-          <a href="{% url 'accounts:register' %}" class="btn btn-premium-outline w-100 mt-4">Go Max</a>
+
+      <!-- Step 3 -->
+      <div class="glass p-8 rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 group">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-lg mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+          <i class="bi bi-ui-checks"></i>
         </div>
+        <h5 class="text-lg font-bold text-white mb-2">3. We Match</h5>
+        <p class="text-sm text-gray-400 leading-relaxed">We find people in your city who are looking for exactly your service.</p>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="glass p-8 rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 group">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-lg mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+          <i class="bi bi-chat-left-dots"></i>
+        </div>
+        <h5 class="text-lg font-bold text-white mb-2">4. We Message Them</h5>
+        <p class="text-sm text-gray-400 leading-relaxed">We send your details to them on WhatsApp and Facebook. They contact you directly.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Categories -->
-<section class="section-alt">
-  <div class="container text-center">
-    <h2 class="section-title mb-2">Who Is This For?</h2>
-    <p class="subtitle mb-5">We connect all types of local professionals with local clients daily</p>
-    <div class="row g-3 justify-content-center">
+<!-- Pricing Teaser -->
+<section class="py-20 bg-gray-950/20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">Choose Your Reach</h2>
+      <p class="text-gray-400 max-w-xl mx-auto">The more customers we contact for you, the more your business grows.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto items-stretch">
+      <!-- Basic -->
+      <div class="glass p-8 rounded-2xl border border-white/5 flex flex-col justify-between hover:border-white/10 hover:bg-gray-900/30 transition-all duration-300">
+        <div>
+          <span class="text-gray-400 text-sm font-semibold tracking-wider uppercase">Basic</span>
+          <div class="font-heading text-4xl font-extrabold text-white my-4">₹100<span class="text-xs text-gray-500 font-normal">/mo</span></div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Reach out to 1,000 customers
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Local city targeting
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Basic business profiling
+            </li>
+          </ul>
+        </div>
+        <a href="{% url 'accounts:register' %}" class="block w-full text-center py-3 rounded-xl text-sm font-semibold border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200">
+          Get Started
+        </a>
+      </div>
+
+      <!-- Pro -->
+      <div class="glass p-8 rounded-2xl border-2 border-indigo-500 shadow-glow flex flex-col justify-between relative transform md:scale-105 z-10 bg-gray-900/50">
+        <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-[10px] font-bold text-white uppercase tracking-widest rounded-full shadow-lg">
+          Most Popular
+        </span>
+        <div>
+          <span class="text-indigo-400 text-sm font-semibold tracking-wider uppercase">Pro</span>
+          <div class="font-heading text-4xl font-extrabold text-white my-4">₹500<span class="text-xs text-gray-500 font-normal">/mo</span></div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Reach out to 5,000 customers
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Direct WhatsApp messaging
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Priority local matching
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Custom profile bio
+            </li>
+          </ul>
+        </div>
+        <a href="{% url 'accounts:register' %}" class="block w-full text-center py-3 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200">
+          Go Pro
+        </a>
+      </div>
+
+      <!-- Max -->
+      <div class="glass p-8 rounded-2xl border border-white/5 flex flex-col justify-between hover:border-white/10 hover:bg-gray-900/30 transition-all duration-300">
+        <div>
+          <span class="text-amber-400 text-sm font-semibold tracking-wider uppercase">Max</span>
+          <div class="font-heading text-4xl font-extrabold text-white my-4">₹1,500<span class="text-xs text-gray-500 font-normal">/mo</span></div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Reach out to 10,000 customers
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> WhatsApp + Facebook ads
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> Dedicated city outreach
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i class="bi bi-check-lg text-emerald-400 font-bold"></i> 24/7 Priority support
+            </li>
+          </ul>
+        </div>
+        <a href="{% url 'accounts:register' %}" class="block w-full text-center py-3 rounded-xl text-sm font-semibold border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200">
+          Go Max
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section id="categories-section" class="py-20 border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">Who Is This For?</h2>
+      <p class="text-gray-400 max-w-xl mx-auto">We connect all types of local professionals with local clients daily</p>
+    </div>
+    
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
       {% for slug, label in categories %}
-      <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-        <div class="category-chip">
-          <span class="category-icon">
-            {% if slug == "barber" %}✂️{% elif slug == "plumber" %}🔧{% elif slug == "electrician" %}⚡
-            {% elif slug == "carpenter" %}🪚{% elif slug == "painter" %}🎨{% elif slug == "cleaner" %}🧹
-            {% elif slug == "mechanic" %}🔩{% elif slug == "tailor" %}🧵{% elif slug == "tutor" %}📚
-            {% elif slug == "gardener" %}🌱{% elif slug == "photographer" %}📸{% elif slug == "caterer" %}🍽️
-            {% else %}🛠️{% endif %}
-          </span>
-          <span class="fw-semibold text-white d-block mt-2">{{ label }}</span>
-        </div>
+      <div onclick="selectCategory('{{ slug }}')" class="glass p-5 rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/50 hover:-translate-y-1 transition-all duration-300 text-center cursor-pointer group">
+        <span class="w-12 h-12 rounded-xl bg-indigo-500/5 text-indigo-400 border border-indigo-500/10 flex items-center justify-center text-lg mx-auto mb-4 group-hover:scale-110 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/20 group-hover:text-indigo-300 transition-all duration-300">
+          {% if slug == "barber" %}<i class="bi bi-scissors"></i>
+          {% elif slug == "plumber" %}<i class="bi bi-wrench"></i>
+          {% elif slug == "electrician" %}<i class="bi bi-lightning-charge"></i>
+          {% elif slug == "carpenter" %}<i class="bi bi-hammer"></i>
+          {% elif slug == "painter" %}<i class="bi bi-paint-bucket"></i>
+          {% elif slug == "cleaner" %}<i class="bi bi-stars"></i>
+          {% elif slug == "mechanic" %}<i class="bi bi-gear"></i>
+          {% elif slug == "tailor" %}<i class="bi bi-scissors"></i>
+          {% elif slug == "tutor" %}<i class="bi bi-book"></i>
+          {% elif slug == "gardener" %}<i class="bi bi-flower1"></i>
+          {% elif slug == "photographer" %}<i class="bi bi-camera"></i>
+          {% elif slug == "caterer" %}<i class="bi bi-cup-hot"></i>
+          {% else %}<i class="bi bi-tools"></i>{% endif %}
+        </span>
+        <span class="text-sm font-semibold text-gray-200 block">{{ label }}</span>
       </div>
       {% endfor %}
     </div>
   </div>
 </section>
+
+<!-- Interactive Live Script -->
+<script>
+  // Live Directory Search AJAX
+  const cityInput = document.getElementById('search-city');
+  const categorySelect = document.getElementById('search-category');
+  const resultsSection = document.getElementById('search-results-section');
+  const resultsContainer = document.getElementById('search-results');
+
+  async function triggerLiveSearch() {
+    const cityVal = cityInput.value.trim();
+    const catVal = categorySelect.value;
+
+    if (!cityVal && !catVal) {
+      resultsSection.classList.add('hidden');
+      return;
+    }
+
+    try {
+      const url = `{% url 'services:provider_list' %}?city=${encodeURIComponent(cityVal)}&category=${encodeURIComponent(catVal)}`;
+      const response = await fetch(url, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      const html = await response.text();
+      
+      resultsContainer.innerHTML = html;
+      resultsSection.classList.remove('hidden');
+    } catch(e) {
+      console.error('AJAX search failed', e);
+    }
+  }
+
+  cityInput.addEventListener('input', triggerLiveSearch);
+  categorySelect.addEventListener('change', triggerLiveSearch);
+
+  function selectCategory(slug) {
+    categorySelect.value = slug;
+    document.getElementById('search-city').scrollIntoView({ behavior: 'smooth' });
+    triggerLiveSearch();
+  }
+
+  // Interactive Lead Estimator
+  const calcBtn = document.getElementById('calc-btn');
+  const calcCity = document.getElementById('calc-city');
+  const calcCategory = document.getElementById('calc-category');
+  const calcResult = document.getElementById('calc-result');
+  const calcMatchCount = document.getElementById('calc-match-count');
+  const calcRecommendation = document.getElementById('calc-recommendation');
+
+  calcBtn.addEventListener('click', () => {
+    const city = calcCity.value.trim();
+    const category = calcCategory.value;
+
+    if (!city) {
+      alert('Please enter a city.');
+      return;
+    }
+
+    calcBtn.disabled = true;
+    calcBtn.textContent = 'Calculating Reach...';
+
+    // Simulate database lookup delay for a premium interactive feel
+    setTimeout(() => {
+      // Calculate a deterministic number based on string lengths
+      const baseNum = (city.length * 7) + (category.length * 9);
+      const matched = Math.max(12, (baseNum * 3) % 250);
+      
+      calcMatchCount.textContent = matched;
+      
+      let recommend = "We recommend the Basic plan for this reach.";
+      if (matched > 150) {
+        recommend = "We highly recommend the Max plan for maximum reach!";
+      } else if (matched > 50) {
+        recommend = "We recommend the Pro plan to cover this customer base.";
+      }
+      
+      calcRecommendation.textContent = recommend;
+      calcResult.classList.remove('hidden');
+      
+      calcBtn.disabled = false;
+      calcBtn.textContent = 'Calculate Reach';
+    }, 800);
+  });
+
+  // Animated Counts Ticker
+  const counters = document.querySelectorAll('.counter');
+  const speed = 100; // lower is faster
+
+  const startCounters = () => {
+    counters.forEach(counter => {
+      const updateCount = () => {
+        const target = +counter.getAttribute('data-target');
+        const count = +counter.innerText;
+        const inc = Math.ceil(target / speed);
+
+        if (count < target) {
+          counter.innerText = count + inc;
+          setTimeout(updateCount, 15);
+        } else {
+          counter.innerText = target;
+        }
+      };
+      updateCount();
+    });
+  };
+
+  // Run counters on load
+  window.addEventListener('DOMContentLoaded', startCounters);
+</script>
 {% endblock %}

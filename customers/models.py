@@ -49,6 +49,9 @@ class Customer(models.Model):
 
     class Meta:
         ordering = ["city", "name"]
+        indexes = [
+            models.Index(fields=["city", "name"]),
+        ]
 
     def effective_whatsapp(self):
         """Returns whatsapp_number if set, otherwise falls back to phone."""

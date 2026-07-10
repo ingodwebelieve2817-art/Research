@@ -1,21 +1,32 @@
 {% extends "base.html" %}
 {% block title %}{% if customer %}Edit Customer{% else %}Add Customer{% endif %}{% endblock %}
 {% block content %}
-<div class="container py-5" style="max-width:560px">
-  <h2 class="fw-bold mb-4">{% if customer %}Edit Customer{% else %}Add Customer{% endif %}</h2>
-  <div class="card shadow-sm border-0 p-4">
-    <form method="post">
+<div class="max-w-xl mx-auto px-4 py-16">
+  <div class="text-center mb-8">
+    <h2 class="font-heading text-3xl font-bold text-white mb-2">{% if customer %}Edit Customer{% else %}Add Customer{% endif %}</h2>
+    <p class="text-xs text-gray-400">Add customer details for lead matching and outreach campaigns.</p>
+  </div>
+
+  <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 shadow-xl">
+    <form method="post" class="space-y-5">
       {% csrf_token %}
       {% for field in form %}
-      <div class="mb-3">
-        <label class="form-label fw-semibold">{{ field.label }}</label>
+      <div class="flex flex-col">
+        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{ field.label }}</label>
         {{ field }}
-        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+        {% if field.errors %}
+          <div class="text-xs text-rose-400 mt-1.5 font-medium">{{ field.errors }}</div>
+        {% endif %}
       </div>
       {% endfor %}
-      <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a href="{% url 'services:customer_list' %}" class="btn btn-outline-secondary">Cancel</a>
+      
+      <div class="pt-4 border-t border-white/5 flex gap-3">
+        <button type="submit" class="flex-1 py-3 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200">
+          Save
+        </button>
+        <a href="{% url 'services:customer_list' %}" class="flex-1 py-3 text-center rounded-xl text-sm font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+          Cancel
+        </a>
       </div>
     </form>
   </div>

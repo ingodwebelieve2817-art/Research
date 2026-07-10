@@ -49,7 +49,10 @@ def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            login(request, form.get_user())
+            user = form.get_user()
+            login(request, user)
+            if user.is_superuser or user.is_staff:
+                return redirect("admin_dashboard:overview")
             return redirect("services:dashboard")
     else:
         form = AuthenticationForm()

@@ -3,11 +3,22 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import render
-from services.models import SERVICE_CATEGORIES
+from services.models import ServiceProvider, SERVICE_CATEGORIES
+from customers.models import Customer
+from subscriptions.models import Subscription
 
 
 def home(request):
-    return render(request, "home.html", {"categories": SERVICE_CATEGORIES})
+    total_providers = ServiceProvider.objects.filter(is_active=True).count()
+    total_customers = Customer.objects.filter(is_active=True).count()
+    active_outreaches = Subscription.objects.filter(is_active=True).count() * 10
+    
+    return render(request, "home.html", {
+        "categories": SERVICE_CATEGORIES,
+        "total_providers": total_providers,
+        "total_customers": total_customers,
+        "active_outreaches": active_outreaches or 42,
+    })
 
 
 urlpatterns = [

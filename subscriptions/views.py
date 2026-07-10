@@ -10,9 +10,24 @@ from services.models import ServiceProvider
 from .models import SubscriptionPlan, Subscription, Payment
 
 
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.forms.models import model_to_dict
+
+
 def plans_page(request):
     plans = SubscriptionPlan.objects.all().order_by("price_monthly")
-    return render(request, "subscriptions/plans.html", {"plans": plans})
+    plans_list = []
+    for p in plans:
+        d = model_to_dict(p)
+        d["price_monthly"] = float(p.price_monthly)
+        plans_list.append(d)
+    plans_json = json.dumps(plans_list, cls=DjangoJSONEncoder)
+    
+    return render(request, "subscriptions/plans.html", {
+        "plans": plans,
+        "plans_json": plans_json
+    })
 
 
 @login_required

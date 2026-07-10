@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block title %}AI Outreach Assistant{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-[#030712] relative">
+  <!-- Spotlight Glow -->
+  <div class="absolute top-0 right-0 w-[500px] h-[300px] bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col lg:flex-row gap-8">
+
+      <!-- Sidebar Navigation Panel (matches dashboard layout) -->
+      <aside class="w-full lg:w-64 shrink-0">
+        <div class="glass rounded-2xl border border-white/5 p-6 space-y-6">
+          <div class="px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-center border border-indigo-500/20">
+            <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider block mb-1">Business</span>
+            <span class="text-sm font-bold text-white block truncate">{{ provider.business_name }}</span>
+          </div>
+
+          <nav class="space-y-1">
+            <a href="{% url 'services:dashboard' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{% url 'services:ai_writer' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+              <i class="bi bi-robot"></i> AI Writer <span class="px-1.5 py-0.5 rounded bg-indigo-500 text-[9px] text-white uppercase font-bold tracking-widest ml-auto">New</span>
+            </a>
+            <a href="{% url 'messaging:outreach_list' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-megaphone"></i> Outreach History
+            </a>
+            <a href="{% url 'subscriptions:my_subscription' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-credit-card"></i> My Plan
+            </a>
+            <a href="{% url 'services:setup' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-pencil-square"></i> Edit Profile
+            </a>
+          </nav>
+
+          <div class="pt-4 border-t border-white/5">
+            <a href="{% url 'accounts:logout' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Panel -->
+      <div class="flex-grow space-y-8">
+        <div>
+          <h3 class="font-heading text-2xl sm:text-3xl font-extrabold text-white mb-1">AI Outreach Copywriter</h3>
+          <p class="text-sm text-gray-400">Generate high-converting, query-optimized message campaigns powered by neural context compression.</p>
+        </div>
+
+        {% if not supercompress_api_configured %}
+        <div class="p-5 rounded-2xl border bg-amber-500/10 border-amber-500/20 text-amber-300 flex items-start gap-4">
+          <i class="bi bi-exclamation-triangle-fill text-lg mt-0.5"></i>
+          <div>
+            <h6 class="font-heading font-bold text-white text-sm">SuperCompress API Key Not Configured</h6>
+            <p class="text-xs text-gray-400 leading-relaxed mt-1">
+              Add your <code>SUPERCOMPRESS_API_KEY</code> and <code>GEMINI_API_KEY</code> to the project <code>.env</code> file.
+              Without keys, the writer runs in offline fallback demonstration mode.
+              Get a free compression key from <a href="https://supercompress.dev/dashboard" target="_blank" class="text-white underline font-semibold hover:text-indigo-300">supercompress.dev &rarr;</a>
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <!-- Left Col: Input & Output -->
+          <div class="space-y-6">
+            <div class="glass p-6 rounded-2xl border border-white/5 shadow-xl space-y-4">
+              <h5 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="bi bi-magic text-indigo-400"></i> Generate Outreach Copy
+              </h5>
+              
+              <div class="space-y-1">
+                <label for="prompt-input" class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Instructions for AI</label>
+                <textarea id="prompt-input" rows="4" placeholder="Example: Write a discount offer of 20% on our plumbing service for weekend emergencies." class="w-full"></textarea>
+              </div>
+
+              <button id="generate-btn" class="w-full py-3 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200 flex items-center justify-center gap-2">
+                <span id="btn-text">Generate Message</span>
+                <div id="btn-spinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </button>
+            </div>
+
+            <!-- Result Box -->
+            <div id="result-card" class="hidden glass p-6 rounded-2xl border border-white/5 shadow-xl space-y-4">
+              <h5 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="bi bi-file-earmark-text text-emerald-400"></i> Generated Outreach Message
+              </h5>
+              
+              <div class="p-4 rounded-xl bg-gray-950/60 border border-white/5 relative font-mono text-xs">
+                <p id="generated-output" class="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap"></p>
+                
+                <button id="copy-btn" class="absolute top-3 right-3 p-2 rounded-lg bg-gray-900 border border-white/5 text-gray-400 hover:text-white transition-all hover:bg-gray-850" title="Copy to clipboard">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              <p class="text-[10px] text-gray-500 flex items-center gap-1.5"><i class="bi bi-info-circle"></i> Copy this generated message and paste it into your profile description to optimize outreaches.</p>
+            </div>
+          </div>
+
+          <!-- Right Col: SuperCompress Stats Panel -->
+          <div class="space-y-6">
+            <div class="glass p-6 rounded-2xl border border-white/5 shadow-xl space-y-5">
+              <h5 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="bi bi-bar-chart-steps text-indigo-400"></i> Context Compiler Metrics
+              </h5>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl bg-gray-950/40 border border-white/5">
+                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Compression Ratio</span>
+                  <div id="savings-val" class="font-heading text-2xl font-extrabold text-white">—</div>
+                  <span class="text-[10px] text-gray-500">original tokens saved</span>
+                </div>
+                <div class="p-4 rounded-xl bg-gray-950/40 border border-white/5">
+                  <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Compression Risk</span>
+                  <div id="risk-val" class="font-heading text-2xl font-extrabold text-white">—</div>
+                  <span class="text-[10px] text-gray-500">evidence loss level</span>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex justify-between text-xs">
+                  <span class="text-gray-400 font-medium">Original Prompt Context</span>
+                  <span id="original-tokens" class="text-gray-300 font-mono">0 tokens</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-indigo-400 font-medium">Compressed Context Sent to LLM</span>
+                  <span id="kept-tokens" class="text-indigo-300 font-mono">0 tokens</span>
+                </div>
+
+                <div class="w-full h-2 bg-gray-900 border border-white/5 rounded-full overflow-hidden mt-1">
+                  <div id="tokens-bar" class="h-full bg-indigo-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- Collapsible View of original vs compressed -->
+              <div class="space-y-3 pt-3 border-t border-white/5">
+                <button onclick="document.getElementById('debug-blocks').classList.toggle('hidden')" class="w-full text-left text-xs font-semibold text-gray-400 hover:text-white flex justify-between items-center">
+                  <span>Show Compiler Context Blocks</span>
+                  <i class="bi bi-chevron-down text-[10px]"></i>
+                </button>
+                
+                <div id="debug-blocks" class="hidden space-y-3 pt-2">
+                  <div class="space-y-1">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Original Context</span>
+                    <pre id="raw-original" class="p-3 rounded-lg bg-gray-950/80 border border-white/5 text-[11px] font-mono text-gray-400 h-28 overflow-y-auto whitespace-pre-wrap"></pre>
+                  </div>
+                  <div class="space-y-1">
+                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Compressed Context</span>
+                    <pre id="raw-compressed" class="p-3 rounded-lg bg-gray-950/80 border border-white/5 text-[11px] font-mono text-indigo-300 h-28 overflow-y-auto whitespace-pre-wrap"></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('generate-btn').addEventListener('click', async () => {
+    const promptInput = document.getElementById('prompt-input').value.trim();
+    if (!promptInput) return alert('Please enter a description prompt.');
+
+    const btn = document.getElementById('generate-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+
+    // UI state loading
+    btn.disabled = true;
+    btnText.textContent = 'Compressing & Generating...';
+    btnSpinner.classList.remove('hidden');
+
+    try {
+      const response = await fetch('', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: new URLSearchParams({ prompt: promptInput })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Stats
+        document.getElementById('savings-val').textContent = data.savings_pct;
+        document.getElementById('risk-val').textContent = data.compression_risk;
+        
+        document.getElementById('original-tokens').textContent = data.original_tokens + ' tokens';
+        document.getElementById('kept-tokens').textContent = data.kept_tokens + ' tokens';
+
+        const kept = data.kept_tokens;
+        const orig = data.original_tokens || 1;
+        const pct = Math.round((kept / orig) * 100);
+        document.getElementById('tokens-bar').style.width = pct + '%';
+
+        // Previews
+        document.getElementById('raw-original').textContent = data.original_text;
+        document.getElementById('raw-compressed').textContent = data.compressed_text;
+
+        // Output Copy
+        document.getElementById('generated-output').textContent = data.generated_copy;
+        document.getElementById('result-card').classList.remove('hidden');
+      } else {
+        alert('Generation failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network or server error occurred.');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = 'Generate Message';
+      btnSpinner.classList.add('hidden');
+    }
+  });
+
+  document.getElementById('copy-btn').addEventListener('click', () => {
+    const text = document.getElementById('generated-output').textContent;
+    navigator.clipboard.writeText(text);
+    
+    const copyBtn = document.getElementById('copy-btn');
+    copyBtn.innerHTML = '<i class="bi bi-check-lg text-emerald-400"></i>';
+    setTimeout(() => {
+      copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+    }, 2000);
+  });
+</script>
+
+{% endblock %}

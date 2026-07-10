@@ -2,512 +2,211 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 
-<!-- Custom Styling for Glassmorphic Dashboard -->
-<style>
-  /* Import Google Fonts and Icons CDN */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap');
-  @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css');
-
-  :root {
-    --bg-primary: #090d16;
-    --bg-secondary: #0f172a;
-    --bg-card: rgba(22, 28, 45, 0.7);
-    --border-card: rgba(255, 255, 255, 0.08);
-    --border-card-hover: rgba(99, 102, 241, 0.3);
-    --text-main: #ffffff;
-    --text-muted: #e2e8f0; /* Premium Pearl White */
-    --text-dimmed: #94a3b8; /* Muted Slate */
-    --color-primary: #6366f1; /* Indigo */
-    --color-secondary: #06b6d4; /* Cyan */
-    --color-success: #10b981; /* Emerald */
-    --color-warning: #f59e0b; /* Amber */
-    --color-danger: #ef4444; /* Rose */
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', sans-serif;
-  }
-
-  body {
-    background-color: var(--bg-primary) !important;
-    color: var(--text-main);
-    font-family: var(--font-body);
-  }
-
-  /* Explicit Bootstrap text overrides to prevent camouflage */
-  .text-muted {
-    color: var(--text-muted) !important;
-  }
-
-  /* App Container utilities */
-  .dashboard-container {
-    min-height: 100vh;
-    background: radial-gradient(circle at 80% 10%, rgba(99, 102, 241, 0.1) 0%, rgba(9, 13, 22, 0) 60%), var(--bg-primary);
-  }
-
-  /* Glassmorphism sidebar */
-  .sidebar-panel {
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-right: 1px solid var(--border-card);
-    min-height: 100vh;
-  }
-
-  .sidebar-panel .business-badge {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.25);
-    border-radius: 8px;
-    padding: 0.6rem 0.8rem;
-    color: #fff;
-    font-family: var(--font-heading);
-    letter-spacing: -0.01em;
-  }
-
-  .sidebar-panel a {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    margin-bottom: 0.25rem;
-    transition: all 0.3s ease;
-  }
-
-  .sidebar-panel a i {
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-  }
-
-  .sidebar-panel a:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  .sidebar-panel a.active {
-    color: #fff;
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid rgba(99, 102, 241, 0.25);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
-  }
-
-  .sidebar-panel a.active i {
-    color: var(--color-primary);
-  }
-
-  .sidebar-panel a.text-danger:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #f87171 !important;
-  }
-
-  /* Glassmorphism General Cards */
-  .glass-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border-card);
-    border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .glass-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--border-card-hover);
-    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.08);
-  }
-
-  /* Metric Card Customizations */
-  .metric-card {
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .metric-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-  }
-
-  .metric-card.primary::after { background: var(--color-primary); }
-  .metric-card.success::after { background: var(--color-success); }
-  .metric-card.warning::after { background: var(--color-warning); }
-  .metric-card.danger::after { background: var(--color-danger); }
-
-  .metric-title {
-    color: var(--text-dimmed);
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .metric-value {
-    font-family: var(--font-heading);
-    font-size: 2.25rem;
-    font-weight: 800;
-    color: #fff;
-    margin: 0.4rem 0;
-  }
-
-  /* Custom Alert Styles */
-  .glass-alert {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-  }
-
-  .glass-alert.alert-warning {
-    border-color: rgba(245, 158, 11, 0.25);
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.08);
-  }
-
-  .glass-alert.alert-success {
-    border-color: rgba(16, 185, 129, 0.25);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.08);
-  }
-
-  .alert-icon-warning { color: var(--color-warning); }
-  .alert-icon-success { color: var(--color-success); }
-
-  .alert-link {
-    color: #fff !important;
-    text-decoration: underline;
-    font-weight: 600;
-  }
-
-  /* Quick Actions Cards */
-  .action-card {
-    text-decoration: none !important;
-    color: inherit !important;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 2rem;
-  }
-
-  .action-icon-wrapper {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 1.5rem;
-    margin-bottom: 1.25rem;
-    transition: all 0.3s ease;
-  }
-
-  .action-card:hover .action-icon-wrapper {
-    transform: scale(1.1);
-  }
-
-  .action-card:hover .action-icon-wrapper.text-primary {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: rgba(99, 102, 241, 0.3);
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
-  }
-
-  .action-card:hover .action-icon-wrapper.text-success {
-    background: rgba(16, 185, 129, 0.15);
-    border-color: rgba(16, 185, 129, 0.3);
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
-  }
-
-  .action-card:hover .action-icon-wrapper.text-warning {
-    background: rgba(245, 158, 11, 0.15);
-    border-color: rgba(245, 158, 11, 0.3);
-    box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
-  }
-
-  /* Table Customizations */
-  .table-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
-  .table-panel table {
-    margin-bottom: 0;
-  }
-
-  .table-panel thead {
-    background: rgba(15, 23, 42, 0.8) !important;
-  }
-
-  .table-panel th {
-    color: var(--text-dimmed);
-    font-family: var(--font-heading);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border-card);
-    padding: 1.1rem 1.5rem;
-  }
-
-  .table-panel td {
-    padding: 1.1rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    color: var(--text-main);
-  }
-
-  .table-panel tbody tr {
-    transition: background-color 0.3s ease;
-  }
-
-  .table-panel tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.02) !important;
-  }
-
-  /* Status Badges */
-  .status-badge {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 99px;
-  }
-
-  .status-badge.bg-success {
-    background: rgba(16, 185, 129, 0.15) !important;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #34d399 !important;
-  }
-
-  .status-badge.bg-danger {
-    background: rgba(239, 68, 68, 0.15) !important;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #f87171 !important;
-  }
-
-  .status-badge.bg-warning {
-    background: rgba(245, 158, 11, 0.15) !important;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    color: #fbbf24 !important;
-  }
-
-  .status-badge.bg-secondary {
-    background: rgba(148, 163, 184, 0.15) !important;
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    color: #cbd5e1 !important;
-  }
-
-  /* Detail buttons */
-  .btn-outline-premium {
-    color: var(--text-main);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: transparent;
-    font-weight: 500;
-    border-radius: 8px;
-    padding: 0.4rem 1rem;
-    transition: all 0.3s ease;
-  }
-
-  .btn-outline-premium:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: #fff;
-    color: #fff;
-  }
-
-  /* Welcome text adjustments */
-  .welcome-title {
-    font-family: var(--font-heading);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: #fff;
-  }
-</style>
-
-<div class="container-fluid py-0 dashboard-container">
-  <div class="row min-vh-100">
-
-    <!-- Sidebar Panel -->
-    <div class="col-md-2 sidebar-panel py-4 px-3 d-flex flex-column justify-content-between">
-      <div>
-        <div class="business-badge text-center fw-bold mb-4">
-          <i class="bi bi-briefcase-fill me-2 text-gradient"></i>
-          {{ provider.business_name }}
+<div class="min-h-screen bg-[#030712] relative">
+  <!-- Spotlight Glow -->
+  <div class="absolute top-0 right-0 w-[500px] h-[300px] bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col lg:flex-row gap-8">
+      
+      <!-- Sidebar Navigation Panel -->
+      <aside class="w-full lg:w-64 shrink-0">
+        <div class="glass rounded-2xl border border-white/5 p-6 space-y-6">
+          <div class="px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-center border border-indigo-500/20">
+            <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider block mb-1">Business</span>
+            <span class="text-sm font-bold text-white block truncate">{{ provider.business_name }}</span>
+          </div>
+          
+          <nav class="space-y-1">
+            <a href="{% url 'services:dashboard' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+              <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{% url 'services:ai_writer' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-robot"></i> AI Writer
+            </a>
+            <a href="{% url 'messaging:outreach_list' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-megaphone"></i> Outreach History
+            </a>
+            <a href="{% url 'subscriptions:my_subscription' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-credit-card"></i> My Plan
+            </a>
+            <a href="{% url 'services:setup' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold border border-transparent text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+              <i class="bi bi-pencil-square"></i> Edit Profile
+            </a>
+          </nav>
+          
+          <div class="pt-4 border-t border-white/5">
+            <a href="{% url 'accounts:logout' %}" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </div>
         </div>
-        <a href="{% url 'services:dashboard' %}" class="active">
-          <i class="bi bi-speedometer2 me-3"></i>Dashboard
-        </a>
-        <a href="{% url 'messaging:outreach_list' %}">
-          <i class="bi bi-megaphone me-3"></i>Outreach History
-        </a>
-        <a href="{% url 'subscriptions:my_subscription' %}">
-          <i class="bi bi-credit-card me-3"></i>My Plan
-        </a>
-        <a href="{% url 'services:setup' %}">
-          <i class="bi bi-pencil-square me-3"></i>Edit Profile
-        </a>
-      </div>
-      <div>
-        <hr class="border-secondary my-3"/>
-        <a href="{% url 'accounts:logout' %}" class="text-danger">
-          <i class="bi bi-box-arrow-right me-3"></i>Logout
-        </a>
-      </div>
-    </div>
-
-    <!-- Main content panel -->
-    <div class="col-md-10 py-5 px-4 px-lg-5">
-      <h3 class="welcome-title mb-1">Welcome, {{ request.user.username }}!</h3>
-      <p class="text-muted mb-4">{{ provider.business_name }} &mdash; {{ provider.get_category_display }} in {{ provider.city }}</p>
-
-      <!-- Subscription status alert -->
-      {% if not subscription %}
-      <div class="alert glass-alert alert-warning d-flex align-items-start gap-3 mb-4">
-        <i class="bi bi-exclamation-triangle-fill fs-4 alert-icon-warning mt-1"></i>
+      </aside>
+      
+      <!-- Main Dashboard Panel -->
+      <div class="flex-grow space-y-8">
+        
+        <!-- Welcome Header -->
         <div>
-          <h6 class="fw-bold text-white mb-1">No Active Plan</h6>
-          <p class="text-muted small mb-0">
-            You have no active plan. Pick a reach limit so we can start matching and reaching out to customers on your behalf.
-            <a href="{% url 'subscriptions:plans' %}" class="alert-link ms-2">Choose a Plan &rarr;</a>
-          </p>
+          <h3 class="font-heading text-2xl sm:text-3xl font-extrabold text-white mb-1">Welcome, {{ request.user.username }}!</h3>
+          <p class="text-sm text-gray-400">{{ provider.business_name }} &mdash; <span class="text-indigo-400 font-semibold">{{ provider.get_category_display }}</span> in {{ provider.city }}</p>
         </div>
-      </div>
-      {% else %}
-      <div class="alert glass-alert alert-success d-flex align-items-start gap-3 mb-4">
-        <i class="bi bi-check-circle-fill fs-4 alert-icon-success mt-1"></i>
-        <div>
-          <h6 class="fw-bold text-white mb-1">{{ subscription.plan.name }} Plan is Active</h6>
-          <p class="text-muted small mb-0">
-            We will reach up to <strong>{{ subscription.plan.reach_limit }} customers</strong>
-            in {{ provider.city }} who need {{ provider.get_category_display }} services.
-            {% if subscription.days_remaining is not None %}
-              <span class="text-muted ms-2">({{ subscription.days_remaining }} days left)</span>
-            {% endif %}
-            <a href="{% url 'subscriptions:my_subscription' %}" class="alert-link ms-2">Manage Subscription &rarr;</a>
-          </p>
-        </div>
-      </div>
-      {% endif %}
 
-      <!-- Stats Cards Row -->
-      <div class="row g-3 mb-5">
-        <div class="col-sm-6 col-xl-3">
-          <div class="glass-card metric-card primary h-100">
-            <div class="metric-title">Customers in Your City</div>
-            <div class="metric-value">{{ matched_customers }}</div>
-            <div class="text-muted small">matching {{ provider.get_category_display }} in {{ provider.city }}</div>
+        <!-- Plan Status Alert banner -->
+        {% if not subscription %}
+        <div class="flex items-start gap-4 p-5 rounded-2xl border bg-amber-500/10 border-amber-500/20 text-amber-300">
+          <i class="bi bi-exclamation-triangle-fill text-xl mt-0.5"></i>
+          <div class="space-y-1">
+            <h6 class="font-heading font-bold text-white text-sm">No Active Plan</h6>
+            <p class="text-xs text-gray-400 leading-relaxed">
+              You have no active plan. Pick a reach limit so we can start matching and reaching out to customers on your behalf.
+              <a href="{% url 'subscriptions:plans' %}" class="text-white underline font-semibold ml-2 hover:text-indigo-300 transition-colors">Choose a Plan &rarr;</a>
+            </p>
           </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="glass-card metric-card success h-100">
-            <div class="metric-title">Your Plan Reach</div>
-            <div class="metric-value">{{ subscription.plan.reach_limit|default:"—" }}</div>
-            <div class="text-muted small">customers we will contact</div>
+        {% else %}
+        <div class="flex items-start gap-4 p-5 rounded-2xl border bg-emerald-500/10 border-emerald-500/20 text-emerald-300">
+          <i class="bi bi-check-circle-fill text-xl mt-0.5"></i>
+          <div class="space-y-1">
+            <h6 class="font-heading font-bold text-white text-sm">{{ subscription.plan.name }} Plan is Active</h6>
+            <p class="text-xs text-gray-400 leading-relaxed">
+              We will reach up to <strong class="text-white">{{ subscription.plan.reach_limit }} customers</strong> in {{ provider.city }} who need {{ provider.get_category_display }} services.
+              {% if subscription.days_remaining is not None %}
+                <span class="text-gray-300 ml-2">({{ subscription.days_remaining }} days left)</span>
+              {% endif %}
+              <a href="{% url 'subscriptions:my_subscription' %}" class="text-white underline font-semibold ml-2 hover:text-indigo-300 transition-colors">Manage Subscription &rarr;</a>
+            </p>
           </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="glass-card metric-card warning h-100">
-            <div class="metric-title">Total Outreaches Run</div>
-            <div class="metric-value">{{ provider.outreaches.count }}</div>
-            <div class="text-muted small">campaign outreaches completed</div>
+        {% endif %}
+
+        <!-- Metrics Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <!-- Card 1 -->
+          <div class="glass p-5 rounded-2xl border-l-4 border-l-indigo-500 border-y border-r border-white/5 hover:bg-gray-900/40 transition-colors">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Customers In City</span>
+            <div class="font-heading text-3xl font-extrabold text-white mb-1">{{ matched_customers }}</div>
+            <p class="text-[11px] text-gray-500 leading-tight">matching {{ provider.get_category_display }} in {{ provider.city }}</p>
           </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="glass-card metric-card danger h-100">
-            <div class="metric-title">Messages Sent (All Time)</div>
-            <div class="metric-value">
+          <!-- Card 2 -->
+          <div class="glass p-5 rounded-2xl border-l-4 border-l-emerald-500 border-y border-r border-white/5 hover:bg-gray-900/40 transition-colors">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Your Plan Reach</span>
+            <div class="font-heading text-3xl font-extrabold text-white mb-1">{{ subscription.plan.reach_limit|default:"—" }}</div>
+            <p class="text-[11px] text-gray-500 leading-tight">customers we will contact</p>
+          </div>
+          <!-- Card 3 -->
+          <div class="glass p-5 rounded-2xl border-l-4 border-l-amber-500 border-y border-r border-white/5 hover:bg-gray-900/40 transition-colors">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Total Outreaches</span>
+            <div class="font-heading text-3xl font-extrabold text-white mb-1">{{ provider.outreaches.count }}</div>
+            <p class="text-[11px] text-gray-500 leading-tight">campaign outreaches completed</p>
+          </div>
+          <!-- Card 4 -->
+          <div class="glass p-5 rounded-2xl border-l-4 border-l-rose-500 border-y border-r border-white/5 hover:bg-gray-900/40 transition-colors">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Messages Sent</span>
+            <div class="font-heading text-3xl font-extrabold text-white mb-1">
               {% with total=0 %}
                 {{ provider.outreaches.all|length }}
               {% endwith %}
             </div>
-            <div class="text-muted small">total outreach attempts sent</div>
+            <p class="text-[11px] text-gray-500 leading-tight">total outreach attempts sent</p>
           </div>
         </div>
-      </div>
 
-      <!-- Quick Actions Cards Row -->
-      <div class="row g-3 mb-5">
-        <div class="col-md-4">
-          <a href="{% url 'subscriptions:plans' %}" class="glass-card action-card">
-            <div class="action-icon-wrapper text-primary">
+        <!-- Quick Actions Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <a href="{% url 'subscriptions:plans' %}" class="glass p-6 rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 flex flex-col gap-3 group">
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-lg group-hover:scale-105 transition-transform">
               <i class="bi bi-arrow-up-circle"></i>
             </div>
-            <h5 class="fw-bold text-white mb-2">Upgrade Plan</h5>
-            <p class="text-muted small mb-0">Reach more potential customers in your city by upgrading your plan limit.</p>
+            <div>
+              <h5 class="text-sm font-bold text-white mb-1">Upgrade Plan</h5>
+              <p class="text-xs text-gray-400 leading-relaxed">Reach more potential customers in your city by upgrading your plan limit.</p>
+            </div>
           </a>
-        </div>
-        <div class="col-md-4">
-          <a href="{% url 'messaging:outreach_list' %}" class="glass-card action-card">
-            <div class="action-icon-wrapper text-success">
+          
+          <a href="{% url 'messaging:outreach_list' %}" class="glass p-6 rounded-2xl border border-white/5 hover:border-emerald-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 flex flex-col gap-3 group">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-lg group-hover:scale-105 transition-transform">
               <i class="bi bi-megaphone"></i>
             </div>
-            <h5 class="fw-bold text-white mb-2">Outreach History</h5>
-            <p class="text-muted small mb-0">See matching logs and contact reports of all reached customers.</p>
+            <div>
+              <h5 class="text-sm font-bold text-white mb-1">Outreach History</h5>
+              <p class="text-xs text-gray-400 leading-relaxed">See matching logs and contact reports of all reached customers.</p>
+            </div>
           </a>
-        </div>
-        <div class="col-md-4">
-          <a href="{% url 'services:setup' %}" class="glass-card action-card">
-            <div class="action-icon-wrapper text-warning">
+
+          <a href="{% url 'services:setup' %}" class="glass p-6 rounded-2xl border border-white/5 hover:border-amber-500/20 hover:bg-gray-900/50 hover:shadow-glow transition-all duration-300 flex flex-col gap-3 group">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-lg group-hover:scale-105 transition-transform">
               <i class="bi bi-pencil-square"></i>
             </div>
-            <h5 class="fw-bold text-white mb-2">Edit Profile</h5>
-            <p class="text-muted small mb-0">Update your business details, categories, city, or contact info.</p>
+            <div>
+              <h5 class="text-sm font-bold text-white mb-1">Edit Profile</h5>
+              <p class="text-xs text-gray-400 leading-relaxed">Update your business details, categories, city, or contact info.</p>
+            </div>
           </a>
         </div>
-      </div>
 
-      <!-- Recent Outreaches Table Section -->
-      <h5 class="fw-bold text-white mb-3">Recent Outreaches</h5>
-      <div class="table-responsive table-panel">
-        <table class="table align-middle">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Channel</th>
-              <th>Status</th>
-              <th>Matched</th>
-              <th>Sent</th>
-              <th>Failed</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for o in recent_outreaches %}
-            <tr>
-              <td class="text-muted small">{{ o.created_at|date:"M j, Y H:i" }}</td>
-              <td>{{ o.get_channel_display }}</td>
-              <td>
-                <span class="status-badge badge {% if o.status == 'done' %}bg-success{% elif o.status == 'failed' %}bg-danger{% elif o.status == 'running' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
-                  {{ o.get_status_display }}
-                </span>
-              </td>
-              <td>{{ o.total_matched }}</td>
-              <td class="text-success fw-semibold">{{ o.total_sent }}</td>
-              <td class="text-danger">{{ o.total_failed }}</td>
-              <td class="text-end">
-                <a href="{% url 'messaging:outreach_detail' o.pk %}" class="btn-outline-premium btn-sm btn">Details</a>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="7" class="text-center text-muted py-5">
-                <i class="bi bi-inbox fs-2 d-block mb-2 text-muted opacity-50"></i>
-                No outreaches yet. 
-                {% if not subscription %}
-                  <a href="{% url 'subscriptions:plans' %}" class="text-gradient fw-bold ms-1">Subscribe to a plan to start</a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <!-- Recent Outreaches Table -->
+        <div class="space-y-3">
+          <h5 class="font-heading text-lg font-bold text-white">Recent Outreaches</h5>
+          
+          <div class="overflow-hidden border border-white/5 rounded-2xl glass">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-white/5 bg-gray-950/40">
+                    <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
+                    <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Channel</th>
+                    <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                    <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Matched</th>
+                    <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Sent</th>
+                    <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Failed</th>
+                    <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  {% for o in recent_outreaches %}
+                  <tr class="hover:bg-white/[0.01] transition-colors">
+                    <td class="p-4 text-xs text-gray-400">{{ o.created_at|date:"M j, Y H:i" }}</td>
+                    <td class="p-4 text-sm text-gray-250 font-medium">{{ o.get_channel_display }}</td>
+                    <td class="p-4 text-sm">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold 
+                        {% if o.status == 'done' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                        {% elif o.status == 'failed' %}bg-rose-500/10 text-rose-400 border border-rose-500/20
+                        {% elif o.status == 'running' %}bg-amber-500/10 text-amber-400 border border-amber-500/20
+                        {% else %}bg-gray-800 text-gray-400 border border-gray-700{% endif %}">
+                        {{ o.get_status_display }}
+                      </span>
+                    </td>
+                    <td class="p-4 text-sm text-gray-300">{{ o.total_matched }}</td>
+                    <td class="p-4 text-sm text-emerald-400 font-semibold">{{ o.total_sent }}</td>
+                    <td class="p-4 text-sm text-rose-400">{{ o.total_failed }}</td>
+                    <td class="p-4 text-sm text-right">
+                      <a href="{% url 'messaging:outreach_detail' o.pk %}" class="inline-block px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+                        Details
+                      </a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="p-12 text-center text-gray-500">
+                      <i class="bi bi-inbox text-3xl d-block mb-3 opacity-30"></i>
+                      <p class="text-sm">No outreaches yet.</p>
+                      {% if not subscription %}
+                        <a href="{% url 'subscriptions:plans' %}" class="inline-block mt-3 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors">Subscribe to a plan to start &rarr;</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-
   </div>
 </div>
+
 {% endblock %}
+

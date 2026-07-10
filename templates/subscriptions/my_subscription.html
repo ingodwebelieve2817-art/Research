@@ -1,55 +1,95 @@
 {% extends "base.html" %}
 {% block title %}My Subscription{% endblock %}
 {% block content %}
-<div class="container py-5" style="max-width:640px">
-  <h2 class="fw-bold mb-4">My Subscription</h2>
+<div class="max-w-2xl mx-auto px-4 py-16">
+  <h2 class="font-heading text-3xl font-bold text-white mb-8">My Subscription</h2>
+  
   {% if subscription %}
-  <div class="card shadow-sm border-0 p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-start">
+  <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 mb-8">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-4 mb-6">
       <div>
-        <h4 class="fw-bold mb-1">{{ subscription.plan.name }} Plan</h4>
-        <span class="badge {% if subscription.status == 'active' %}bg-success{% elif subscription.status == 'expired' %}bg-danger{% else %}bg-secondary{% endif %}">{{ subscription.get_status_display }}</span>
+        <h4 class="font-heading text-2xl font-bold text-white mb-1.5">{{ subscription.plan.name }} Plan</h4>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold 
+          {% if subscription.status == 'active' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+          {% elif subscription.status == 'expired' %}bg-rose-500/10 text-rose-400 border border-rose-500/20
+          {% else %}bg-gray-800 text-gray-400 border border-gray-700{% endif %}">
+          <span class="w-1.5 h-1.5 rounded-full {% if subscription.status == 'active' %}bg-emerald-400{% elif subscription.status == 'expired' %}bg-rose-400{% else %}bg-gray-400{% endif %}"></span>
+          {{ subscription.get_status_display }}
+        </span>
       </div>
-      <div class="text-end">
-        <div class="fs-4 fw-bold">${{ subscription.plan.price_monthly }}<span class="fs-6 text-muted">/mo</span></div>
+      <div class="sm:text-end">
+        <div class="text-3xl font-extrabold text-indigo-400">₹{{ subscription.plan.price_monthly }}<span class="text-xs text-gray-500 font-normal">/mo</span></div>
       </div>
     </div>
-    <hr/>
-    <div class="row g-2 text-sm">
-      <div class="col-6"><strong>Customer limit:</strong> {{ subscription.plan.customer_limit }}</div>
-      <div class="col-6"><strong>Started:</strong> {{ subscription.started_at|date:"M j, Y" }}</div>
-      <div class="col-6"><strong>Expires:</strong> {% if subscription.expires_at %}{{ subscription.expires_at|date:"M j, Y" }}{% else %}—{% endif %}</div>
-      <div class="col-6"><strong>Days left:</strong> {% if subscription.days_remaining is not None %}{{ subscription.days_remaining }}{% else %}—{% endif %}</div>
+    
+    <div class="grid grid-cols-2 gap-y-4 gap-x-6 border-t border-white/5 pt-6 text-sm">
+      <div>
+        <span class="text-gray-400 block text-xs">Customer Reach Limit</span>
+        <strong class="text-gray-200 font-medium text-base">{{ subscription.plan.reach_limit }}</strong>
+      </div>
+      <div>
+        <span class="text-gray-400 block text-xs">Subscription Started</span>
+        <strong class="text-gray-200 font-medium text-base">{{ subscription.started_at|date:"M j, Y" }}</strong>
+      </div>
+      <div>
+        <span class="text-gray-400 block text-xs">Expires On</span>
+        <strong class="text-gray-200 font-medium text-base">{% if subscription.expires_at %}{{ subscription.expires_at|date:"M j, Y" }}{% else %}—{% endif %}</strong>
+      </div>
+      <div>
+        <span class="text-gray-400 block text-xs">Days Remaining</span>
+        <strong class="text-gray-200 font-medium text-base">{% if subscription.days_remaining is not None %}{{ subscription.days_remaining }}{% else %}—{% endif %}</strong>
+      </div>
     </div>
-    <hr/>
-    <a href="{% url 'subscriptions:plans' %}" class="btn btn-outline-primary btn-sm">Change Plan</a>
+    
+    <div class="mt-8 border-t border-white/5 pt-6 flex justify-end">
+      <a href="{% url 'subscriptions:plans' %}" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-gray-900 hover:bg-gray-850 border border-white/5 hover:border-gray-700 text-gray-300 hover:text-white transition-all duration-200">
+        Change Plan
+      </a>
+    </div>
   </div>
 
   <!-- Payment history -->
   {% if payments %}
-  <h5 class="fw-bold mb-3">Payment History</h5>
-  <div class="table-responsive">
-    <table class="table table-hover align-middle">
-      <thead class="table-light">
-        <tr><th>Amount</th><th>Status</th><th>Gateway</th><th>Date</th></tr>
-      </thead>
-      <tbody>
-        {% for p in payments %}
-        <tr>
-          <td>${{ p.amount }} {{ p.currency }}</td>
-          <td><span class="badge {% if p.status == 'success' %}bg-success{% elif p.status == 'failed' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ p.get_status_display }}</span></td>
-          <td>{{ p.gateway|default:"—" }}</td>
-          <td class="text-muted small">{{ p.created_at|date:"M j, Y" }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="mt-12">
+    <h5 class="font-heading text-lg font-bold text-white mb-4">Payment History</h5>
+    <div class="overflow-hidden border border-white/5 rounded-2xl glass">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-white/5 bg-gray-950/40">
+              <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Amount</th>
+              <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+              <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Gateway</th>
+              <th class="p-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            {% for p in payments %}
+            <tr class="hover:bg-white/[0.01] transition-colors">
+              <td class="p-4 text-sm font-medium text-white">₹{{ p.amount }}</td>
+              <td class="p-4 text-sm">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold 
+                  {% if p.status == 'success' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                  {% elif p.status == 'failed' %}bg-rose-500/10 text-rose-400 border border-rose-500/20
+                  {% else %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% endif %}">
+                  {{ p.get_status_display }}
+                </span>
+              </td>
+              <td class="p-4 text-sm text-gray-300">{{ p.gateway|default:"—" }}</td>
+              <td class="p-4 text-xs text-gray-400">{{ p.created_at|date:"M j, Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   {% endif %}
 
   {% else %}
-  <div class="alert alert-info">
-    You have no active subscription. <a href="{% url 'subscriptions:plans' %}">Browse plans</a>.
+  <div class="flex items-center gap-3 p-4 rounded-xl border bg-indigo-500/10 border-indigo-500/20 text-indigo-400 text-sm">
+    <i class="bi bi-info-circle-fill text-lg"></i>
+    <span>You have no active subscription. <a href="{% url 'subscriptions:plans' %}" class="underline font-semibold hover:text-white transition-colors">Browse plans</a> to get started.</span>
   </div>
   {% endif %}
 </div>

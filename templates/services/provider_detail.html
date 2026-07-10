@@ -1,89 +1,142 @@
 {% extends "base.html" %}
-{% block title %}{{ provider.business_name }}{% endblock %}
+{% block title %}Provider Detail - {{ provider.business_name }}{% endblock %}
 {% block content %}
-<div class="container py-5">
-  <div class="row g-4">
-    <!-- Main -->
-    <div class="col-lg-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Main Column (Left) -->
+    <div class="lg:col-span-2 space-y-10">
       {% if provider.cover_image %}
-      <img src="{{ provider.cover_image.url }}" class="img-fluid rounded-3 mb-4 w-100" style="max-height:280px;object-fit:cover"/>
-      {% endif %}
-      <div class="d-flex align-items-center gap-3 mb-3">
-        {% if provider.logo %}
-        <img src="{{ provider.logo.url }}" class="rounded-circle border" width="72" height="72" style="object-fit:cover"/>
-        {% endif %}
-        <div>
-          <h1 class="h2 fw-bold mb-0">{{ provider.business_name }}</h1>
-          <span class="badge bg-primary">{{ provider.get_category_display }}</span>
-          {% if provider.is_verified %}<span class="badge bg-success ms-1"><i class="bi bi-patch-check-fill"></i> Verified</span>{% endif %}
-        </div>
+      <div class="h-64 sm:h-80 rounded-2xl overflow-hidden border border-white/5 relative bg-gray-900">
+        <img src="{{ provider.cover_image.url }}" class="w-full h-full object-cover"/>
       </div>
-      <p class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ provider.address }}{% if provider.address %}, {% endif %}{{ provider.city }}{% if provider.state %}, {{ provider.state }}{% endif %}</p>
-      <p class="lead">{{ provider.description }}</p>
+      {% endif %}
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
+        <div class="flex items-center gap-4">
+          {% if provider.logo %}
+            <img src="{{ provider.logo.url }}" class="rounded-2xl border-4 border-gray-950 bg-gray-900 w-20 h-20 object-cover shadow-lg"/>
+          {% endif %}
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white mb-1.5 flex items-center gap-2">
+              {{ provider.business_name }}
+              {% if provider.is_verified %}
+                <span class="text-emerald-400 text-lg" title="Verified"><i class="bi bi-patch-check-fill"></i></span>
+              {% endif %}
+            </h1>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                {{ provider.get_category_display }}
+              </span>
+              {% if provider.is_verified %}
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Verified Pro</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 flex items-center gap-1.5"><i class="bi bi-geo-alt text-indigo-400"></i>{{ provider.address }}{% if provider.address %}, {% endif %}{{ provider.city }}{% if provider.state %}, {{ provider.state }}{% endif %}</p>
+      </div>
+
+      <div>
+        <h4 class="font-heading text-lg font-bold text-white mb-3">About Us</h4>
+        <p class="text-sm text-gray-400 leading-relaxed">{{ provider.description }}</p>
+      </div>
 
       <!-- Services -->
       {% if services %}
-      <h4 class="fw-bold mt-4 mb-3">Services Offered</h4>
-      <div class="row g-3">
-        {% for svc in services %}
-        <div class="col-md-6">
-          <div class="card border-0 shadow-sm p-3 h-100">
-            <h6 class="fw-bold mb-1">{{ svc.title }}</h6>
-            <p class="text-muted small mb-2">{{ svc.description }}</p>
-            <span class="text-primary fw-bold">${{ svc.price }} <small class="text-muted fw-normal">{{ svc.price_unit }}</small></span>
+      <div>
+        <h4 class="font-heading text-lg font-bold text-white mb-4">Services Offered</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {% for svc in services %}
+          <div class="glass p-5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors flex flex-col justify-between">
+            <div>
+              <h6 class="text-sm font-bold text-white mb-1">{{ svc.title }}</h6>
+              <p class="text-xs text-gray-400 leading-relaxed mb-4">{{ svc.description }}</p>
+            </div>
+            <span class="text-sm font-bold text-indigo-400">₹{{ svc.price }} <small class="text-gray-500 font-normal">/ {{ svc.price_unit }}</small></span>
           </div>
+          {% endfor %}
         </div>
-        {% endfor %}
       </div>
       {% endif %}
 
       <!-- Reviews -->
-      <h4 class="fw-bold mt-5 mb-3">Customer Reviews</h4>
-      {% if reviews %}
-      {% for review in reviews %}
-      <div class="card border-0 shadow-sm p-3 mb-3">
-        <div class="d-flex justify-content-between">
-          <strong>{{ review.customer.username }}</strong>
-          <span>{% for i in "12345" %}{% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}{% endfor %}</span>
+      <div>
+        <h4 class="font-heading text-lg font-bold text-white mb-4">Customer Reviews</h4>
+        {% if reviews %}
+        <div class="space-y-4">
+          {% for review in reviews %}
+          <div class="glass p-5 rounded-2xl border border-white/5 space-y-2">
+            <div class="flex items-center justify-between gap-4">
+              <strong class="text-sm font-bold text-white">{{ review.customer.username }}</strong>
+              <div class="flex items-center gap-0.5 text-xs text-amber-400">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= review.rating %}
+                    <i class="bi bi-star-fill"></i>
+                  {% else %}
+                    <i class="bi bi-star text-gray-700"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            <p class="text-xs text-gray-400 leading-relaxed">{{ review.comment }}</p>
+            <div class="text-[10px] text-gray-500">{{ review.created_at|date:"N j, Y" }}</div>
+          </div>
+          {% endfor %}
         </div>
-        <p class="text-muted small mb-0 mt-1">{{ review.comment }}</p>
-        <small class="text-muted">{{ review.created_at|date:"N j, Y" }}</small>
+        {% else %}
+        <p class="text-xs text-gray-500">No reviews yet. Be the first to leave a review!</p>
+        {% endif %}
       </div>
-      {% endfor %}
-      {% else %}
-      <p class="text-muted">No reviews yet. Be the first!</p>
-      {% endif %}
     </div>
 
-    <!-- Sidebar contact card -->
-    <div class="col-lg-4">
-      <div class="card border-0 shadow p-4 sticky-top" style="top:80px">
-        <h5 class="fw-bold mb-3">Contact & Book</h5>
+    <!-- Sidebar Column (Right) -->
+    <div class="lg:col-span-1">
+      <div class="sticky top-24 glass p-6 rounded-2xl border border-white/5 space-y-6">
+        <h5 class="font-heading text-base font-bold text-white border-b border-white/5 pb-3">Contact & Book</h5>
+        
         {% if avg_rating %}
-        <p class="mb-2">
-          {% for i in "12345" %}{% if forloop.counter <= avg_rating|floatformat:0|add:0 %}⭐{% else %}☆{% endif %}{% endfor %}
-          <strong>{{ avg_rating|floatformat:1 }}</strong> avg rating
-        </p>
+        <div class="flex items-center gap-1.5 text-xs">
+          <span class="flex gap-0.5 text-amber-400">
+            {% for i in "12345" %}
+              {% if forloop.counter <= avg_rating|floatformat:0|add:0 %}
+                <i class="bi bi-star-fill"></i>
+              {% else %}
+                <i class="bi bi-star text-gray-700"></i>
+              {% endif %}
+            {% endfor %}
+          </span>
+          <span class="text-gray-200 font-semibold ml-1">{{ avg_rating|floatformat:1 }}</span>
+          <span class="text-gray-500">average rating</span>
+        </div>
         {% endif %}
-        {% if provider.whatsapp_number %}
-        <a href="https://wa.me/{{ provider.whatsapp_number|cut:'+' }}" target="_blank" class="btn btn-success w-100 mb-2">
-          <i class="bi bi-whatsapp me-2"></i>Message on WhatsApp
-        </a>
-        {% endif %}
-        {% if provider.facebook_page_id %}
-        <a href="https://facebook.com/{{ provider.facebook_page_id }}" target="_blank" class="btn btn-primary w-100 mb-2">
-          <i class="bi bi-facebook me-2"></i>Facebook Page
-        </a>
-        {% endif %}
-        {% if provider.website %}
-        <a href="{{ provider.website }}" target="_blank" class="btn btn-outline-secondary w-100 mb-2">
-          <i class="bi bi-globe me-2"></i>Website
-        </a>
-        {% endif %}
-        <hr/>
-        <small class="text-muted"><i class="bi bi-clock me-1"></i>Member since {{ provider.created_at|date:"Y" }}</small>
+
+        <div class="flex flex-col gap-2">
+          {% if provider.whatsapp_number %}
+          <a href="https://wa.me/{{ provider.whatsapp_number|cut:'+' }}" target="_blank" class="w-full py-3 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+            <i class="bi bi-whatsapp"></i> Message on WhatsApp
+          </a>
+          {% endif %}
+          
+          {% if provider.facebook_page_id %}
+          <a href="https://facebook.com/{{ provider.facebook_page_id }}" target="_blank" class="w-full py-3 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+            <i class="bi bi-facebook"></i> Facebook Page
+          </a>
+          {% endif %}
+          
+          {% if provider.website %}
+          <a href="{{ provider.website }}" target="_blank" class="w-full py-3 rounded-xl text-xs font-semibold bg-gray-900 border border-white/5 hover:border-gray-700 text-gray-300 hover:text-white transition-all duration-200 flex items-center justify-center gap-2">
+            <i class="bi bi-globe"></i> Website
+          </a>
+          {% endif %}
+        </div>
+
+        <div class="border-t border-white/5 pt-4 text-[10px] text-gray-500 flex items-center gap-1.5">
+          <i class="bi bi-clock"></i> Member since {{ provider.created_at|date:"Y" }}
+        </div>
       </div>
     </div>
+
   </div>
 </div>
 {% endblock %}

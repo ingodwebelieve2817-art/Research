@@ -1,8 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
+import os
+import logging
+from supercompress.client import SuperCompress
 from .models import ServiceProvider, SERVICE_CATEGORIES
 from .forms import ServiceProviderForm
+
+logger = logging.getLogger(__name__)
 
 
 def provider_list(request):
@@ -14,6 +20,9 @@ def provider_list(request):
         providers = providers.filter(category=category)
     if city:
         providers = providers.filter(city__icontains=city)
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(request, "services/partials/provider_cards.html", {"providers": providers})
 
     return render(request, "services/provider_list.html", {
         "providers": providers,
@@ -90,6 +99,8 @@ def service_add(request):
 
 @login_required
 def dashboard(request):
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect("admin_dashboard:overview")
     try:
         provider = request.user.provider_profile
     except ServiceProvider.DoesNotExist:
@@ -111,4 +122,106 @@ def dashboard(request):
         "subscription": subscription,
         "recent_outreaches": recent_outreaches,
         "matched_customers": matched_customers,
+    })
+
+
+@login_required
+def ai_writer(request):
+    provider = get_object_or_404(ServiceProvider, user=request.user)
+    
+    if request.method == "POST":
+        prompt = request.POST.get("prompt", "").strip()
+        if not prompt:
+            return JsonResponse({"success": False, "error": "Prompt cannot be empty."})
+            
+        # 1. Gather context
+        context_parts = [
+            f"Business Name: {provider.business_name}",
+            f"Category: {provider.get_category_display()}",
+            f"City: {provider.city}",
+            f"Address: {provider.address or 'N/A'}",
+            f"WhatsApp Contact: {provider.whatsapp_number}",
+            f"Website: {provider.website or 'N/A'}",
+            f"Description: {provider.description or 'N/A'}",
+        ]
+        context_str = "\n".join(context_parts)
+        
+        # 2. Compress context using SuperCompress
+        sc_api_key = os.getenv("SUPERCOMPRESS_API_KEY", "")
+        compressed_text = context_str
+        original_tokens = len(context_str.split()) # basic token approximation
+        kept_tokens = original_tokens
+        savings_pct = 0.0
+        compression_risk = "N/A (No API Key)"
+        using_compression = False
+        
+        if sc_api_key:
+            try:
+                sc = SuperCompress(api_key=sc_api_key)
+                result = sc.compress(context=context_str, query=prompt)
+                compressed_text = result.compressed_text
+                original_tokens = result.original_tokens
+                kept_tokens = result.kept_tokens
+                savings_pct = result.kv_savings_pct
+                compression_risk = getattr(result, "compression_risk", "low")
+                using_compression = True
+            except Exception as e:
+                # Log error and fallback gracefully
+                logger.error("SuperCompress failed: %s", e)
+                
+        # 3. Call LLM (Gemini or Mock fallback)
+        gemini_api_key = os.getenv("GEMINI_API_KEY", "")
+        generated_copy = ""
+        
+        if gemini_api_key:
+            try:
+                import requests
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_api_key}"
+                headers = {"Content-Type": "application/json"}
+                payload = {
+                    "contents": [{
+                        "parts": [{
+                            "text": (
+                                f"You are an expert AI copywriter for a service matching platform.\n"
+                                f"Here is the compressed context about the service provider:\n"
+                                f"--- BEGIN CONTEXT ---\n{compressed_text}\n--- END CONTEXT ---\n\n"
+                                f"Task: {prompt}\n"
+                                f"Generate a short, high-converting promotional message (maximum 300 characters) "
+                                f"for WhatsApp/Facebook outreach. Do not include quotes, intro, or explanations. "
+                                f"Include the business name and contact information."
+                            )
+                        }]
+                    }]
+                }
+                resp = requests.post(url, json=payload, headers=headers, timeout=10)
+                resp.raise_for_status()
+                data = resp.json()
+                generated_copy = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+            except Exception as e:
+                logger.error("Gemini copy generation failed: %s", e)
+                generated_copy = f"Error generating text via Gemini API: {str(e)}"
+        else:
+            # Fallback mock copywriting
+            generated_copy = (
+                f"🌟 Need professional {provider.get_category_display()} services in {provider.city}? "
+                f"Choose {provider.business_name}! We are prompt, local, and reliable. "
+                f"Contact us on WhatsApp: {provider.whatsapp_number}! {prompt}"
+            )
+            
+        return JsonResponse({
+            "success": True,
+            "original_text": context_str,
+            "compressed_text": compressed_text,
+            "original_tokens": original_tokens,
+            "kept_tokens": kept_tokens,
+            "savings_pct": f"{savings_pct:.1f}%",
+            "compression_risk": compression_risk,
+            "using_compression": using_compression,
+            "generated_copy": generated_copy,
+        })
+        
+    return render(request, "services/ai_writer.html", {
+        "provider": provider,
+        "supercompress_api_configured": bool(os.getenv("SUPERCOMPRESS_API_KEY")),
+        "gemini_api_configured": bool(os.getenv("GEMINI_API_KEY")),
     })

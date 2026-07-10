@@ -58,6 +58,9 @@ class ServiceProvider(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["city", "category"]),
+        ]
 
     def __str__(self):
         return f"{self.business_name} ({self.get_category_display()}) — {self.city}"

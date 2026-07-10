@@ -2,89 +2,111 @@
 {% block title %}Find Providers{% endblock %}
 {% block content %}
 
-<section class="page-header">
-  <div class="container text-center">
-    <h1 class="section-title mb-3">Find <span class="text-gradient">Local Pros</span></h1>
-    <p class="subtitle">Browse verified service providers in your city — barbers, plumbers, electricians and more.</p>
+<!-- Page Header -->
+<section class="relative pt-20 pb-12 overflow-hidden border-b border-white/5 bg-gray-950/20">
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293708_1px,transparent_1px),linear-gradient(to_bottom,#1f293708_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <h1 class="font-heading text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">Find <span class="text-gradient">Local Pros</span></h1>
+    <p class="text-gray-400 max-w-xl mx-auto leading-relaxed text-sm sm:text-base">Browse verified service providers in your city — barbers, plumbers, electricians and more.</p>
   </div>
 </section>
 
-<section class="section-dark">
-  <div class="container">
+<!-- Provider Directory -->
+<section class="py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <!-- Filters -->
-    <form method="get" class="row g-2 mb-5 justify-content-center">
-      <div class="col-md-4">
-        <select name="category" class="form-select">
-          <option value="">All Categories</option>
-          {% for slug, label in categories %}
-          <option value="{{ slug }}" {% if slug == category %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-4">
-        <input type="text" name="city" class="form-control" placeholder="City / Area" value="{{ city }}"/>
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-premium-primary w-100" type="submit">
-          <i class="bi bi-search me-1"></i>Search
-        </button>
-      </div>
-    </form>
+    <!-- Search Filters -->
+    <div class="glass p-6 rounded-2xl border border-white/5 mb-12 max-w-4xl mx-auto">
+      <form method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+        <div class="md:col-span-2">
+          <select name="category" class="w-full">
+            <option value="">All Categories</option>
+            {% for slug, label in categories %}
+            <option value="{{ slug }}" {% if slug == category %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <input type="text" name="city" placeholder="City / Area" value="{{ city }}"/>
+        </div>
+        <div class="md:col-span-1">
+          <button class="w-full py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all duration-200 flex items-center justify-center gap-1.5" type="submit">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div>
+      </form>
+    </div>
 
-    <!-- Provider Cards -->
-    <div class="row g-4">
+    <!-- Provider Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {% for provider in providers %}
-      <div class="col-md-6 col-lg-4">
-        <div class="provider-card">
-          <div class="provider-cover">
+      <div class="glass rounded-2xl border border-white/5 hover:border-indigo-500/20 hover:bg-gray-900/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+        <div>
+          <!-- Cover Banner -->
+          <div class="h-32 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-b border-white/5 relative overflow-hidden">
             {% if provider.cover_image %}
-            <img src="{{ provider.cover_image.url }}" alt="{{ provider.business_name }}"/>
+              <img src="{{ provider.cover_image.url }}" alt="{{ provider.business_name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
             {% endif %}
           </div>
-          <div class="p-4">
-            <div class="d-flex align-items-center gap-3 mb-3">
+          
+          <div class="px-6 pb-6 pt-0 relative">
+            <!-- Profile Logo -->
+            <div class="-mt-8 mb-4 relative z-10 flex items-end">
               {% if provider.logo %}
-              <img src="{{ provider.logo.url }}" class="rounded-circle border border-secondary" width="48" height="48" style="object-fit:cover"/>
+                <img src="{{ provider.logo.url }}" class="rounded-2xl border-4 border-gray-950 bg-gray-900 w-16 h-16 object-cover shadow-lg"/>
               {% else %}
-              <div class="rounded-circle d-flex align-items-center justify-content-center"
-                   style="width:48px;height:48px;background:rgba(99,102,241,0.15);font-size:1.5rem">
-                🛠️
-              </div>
+                <div class="rounded-2xl border-4 border-gray-950 bg-indigo-500/10 text-indigo-400 border-indigo-500/20 w-16 h-16 flex items-center justify-center text-2xl shadow-lg">
+                  🛠️
+                </div>
               {% endif %}
-              <div>
-                <h5 class="mb-1 fw-bold text-white">{{ provider.business_name }}</h5>
-                <span class="badge-soft">{{ provider.get_category_display }}</span>
+              <div class="ml-3 pb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                  {{ provider.get_category_display }}
+                </span>
               </div>
             </div>
 
-            <p class="text-secondary small mb-2">
-              <i class="bi bi-geo-alt-fill me-1" style="color:var(--color-secondary)"></i>
+            <!-- Provider Info -->
+            <h5 class="text-lg font-bold text-white mb-1.5 truncate">{{ provider.business_name }}</h5>
+            
+            <p class="text-xs text-gray-400 flex items-center gap-1 mb-2">
+              <i class="bi bi-geo-alt-fill text-indigo-400"></i>
               {{ provider.city }}{% if provider.state %}, {{ provider.state }}{% endif %}
             </p>
 
+            <!-- Star Ratings -->
             {% if provider.avg_rating %}
-            <p class="mb-3 small text-warning">
-              {% for i in "12345" %}
-                {% if forloop.counter <= provider.avg_rating|floatformat:0|add:0 %}★{% else %}<span class="text-secondary">★</span>{% endif %}
-              {% endfor %}
-              <span class="text-muted ms-1">({{ provider.avg_rating|floatformat:1 }})</span>
-            </p>
+            <div class="flex items-center gap-1 text-xs text-amber-400 mb-4">
+              <div class="flex gap-0.5">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= provider.avg_rating|floatformat:0|add:0 %}
+                    <i class="bi bi-star-fill"></i>
+                  {% else %}
+                    <i class="bi bi-star text-gray-700"></i>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <span class="text-gray-400 font-medium ml-1">({{ provider.avg_rating|floatformat:1 }})</span>
+            </div>
             {% endif %}
 
-            <p class="text-secondary small mb-4">{{ provider.description|truncatewords:18 }}</p>
-
-            <a href="{% url 'services:provider_detail' provider.pk %}" class="btn btn-premium-outline w-100">
-              View Profile <i class="bi bi-arrow-right ms-1"></i>
-            </a>
+            <p class="text-xs text-gray-400 leading-relaxed line-clamp-3 mb-6">{{ provider.description }}</p>
           </div>
+        </div>
+
+        <div class="px-6 pb-6">
+          <a href="{% url 'services:provider_detail' provider.pk %}" class="w-full block text-center py-2.5 rounded-xl text-xs font-semibold bg-gray-900 border border-white/5 text-gray-300 hover:text-white hover:bg-gray-850 hover:border-gray-700 transition-all duration-200">
+            View Profile <i class="bi bi-arrow-right ml-1"></i>
+          </a>
         </div>
       </div>
       {% empty %}
-      <div class="col-12 text-center py-5">
-        <div class="display-1 mb-3" style="opacity:.4">🔍</div>
-        <h4 class="text-white">No providers found</h4>
-        <p class="text-secondary">Try adjusting your filters or check back soon.</p>
+      <div class="col-span-full text-center py-16 text-gray-500">
+        <div class="text-4xl mb-4">🔍</div>
+        <h4 class="text-white font-heading font-bold text-lg mb-1">No providers found</h4>
+        <p class="text-sm">Try adjusting your filters or check back soon.</p>
       </div>
       {% endfor %}
     </div>

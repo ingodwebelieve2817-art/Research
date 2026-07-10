@@ -3,134 +3,138 @@
 {% block title %}Admin Dashboard Overview{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
   <div>
-    <h1 class="h2 fw-bold text-gradient">Dashboard Overview</h1>
-    <p class="text-dimmed">Real-time statistics and system operations summary.</p>
+    <h1 class="font-heading text-3xl font-extrabold text-white mb-1.5">Dashboard Overview</h1>
+    <p class="text-xs text-gray-400">Real-time statistics and system operations summary.</p>
   </div>
 </div>
 
 <!-- Stats row -->
-<div class="row g-4 mb-5">
-  <div class="col-md-4 col-xl-2.4 col-lg-4">
-    <div class="glass-card d-flex align-items-center justify-content-between">
-      <div>
-        <h6 class="text-dimmed mb-1">Total Users</h6>
-        <h3 class="fw-bold mb-0">{{ total_users }}</h3>
-      </div>
-      <div class="card-stat-icon">
-        <i class="bi bi-people text-primary"></i>
-      </div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+  <div class="glass p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+    <div>
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Total Users</span>
+      <h3 class="font-heading text-3xl font-extrabold text-white">{{ total_users }}</h3>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center text-lg">
+      <i class="bi bi-people"></i>
     </div>
   </div>
 
-  <div class="col-md-4 col-xl-2.4 col-lg-4">
-    <div class="glass-card d-flex align-items-center justify-content-between">
-      <div>
-        <h6 class="text-dimmed mb-1">Service Providers</h6>
-        <h3 class="fw-bold mb-0">{{ total_providers }}</h3>
-      </div>
-      <div class="card-stat-icon">
-        <i class="bi bi-briefcase text-info"></i>
-      </div>
+  <div class="glass p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+    <div>
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Providers</span>
+      <h3 class="font-heading text-3xl font-extrabold text-white">{{ total_providers }}</h3>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center justify-center text-lg">
+      <i class="bi bi-briefcase"></i>
     </div>
   </div>
 
-  <div class="col-md-4 col-xl-2.4 col-lg-4">
-    <div class="glass-card d-flex align-items-center justify-content-between">
-      <div>
-        <h6 class="text-dimmed mb-1">Customers</h6>
-        <h3 class="fw-bold mb-0">{{ total_customers }}</h3>
-      </div>
-      <div class="card-stat-icon">
-        <i class="bi bi-person-hearts text-success"></i>
-      </div>
+  <div class="glass p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+    <div>
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Customers</span>
+      <h3 class="font-heading text-3xl font-extrabold text-white">{{ total_customers }}</h3>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-lg">
+      <i class="bi bi-person-hearts"></i>
     </div>
   </div>
 
-  <div class="col-md-6 col-xl-2.4 col-lg-6">
-    <div class="glass-card d-flex align-items-center justify-content-between">
-      <div>
-        <h6 class="text-dimmed mb-1">Total Projects</h6>
-        <h3 class="fw-bold mb-0">{{ total_projects }}</h3>
-      </div>
-      <div class="card-stat-icon">
-        <i class="bi bi-folder2-open text-warning"></i>
-      </div>
+  <div class="glass p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+    <div>
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Total Projects</span>
+      <h3 class="font-heading text-3xl font-extrabold text-white">{{ total_projects }}</h3>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-lg">
+      <i class="bi bi-folder2-open"></i>
     </div>
   </div>
 
-  <div class="col-md-6 col-xl-2.4 col-lg-6">
-    <div class="glass-card d-flex align-items-center justify-content-between">
-      <div>
-        <h6 class="text-dimmed mb-1">Active Subscriptions</h6>
-        <h3 class="fw-bold mb-0">{{ active_subscriptions }}</h3>
-      </div>
-      <div class="card-stat-icon">
-        <i class="bi bi-credit-card text-danger"></i>
-      </div>
+  <div class="glass p-5 rounded-2xl border border-white/5 flex items-center justify-between">
+    <div>
+      <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Active Plans</span>
+      <h3 class="font-heading text-3xl font-extrabold text-white">{{ active_subscriptions }}</h3>
+    </div>
+    <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center text-lg">
+      <i class="bi bi-credit-card"></i>
     </div>
   </div>
 </div>
 
-<div class="row g-4">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
   <!-- Project Status Distribution -->
-  <div class="col-lg-5">
-    <div class="glass-card">
-      <h5 class="fw-bold mb-4"><i class="bi bi-pie-chart me-2 text-primary"></i>Projects Status</h5>
+  <div class="lg:col-span-5">
+    <div class="glass p-6 rounded-2xl border border-white/5 space-y-5 h-full">
+      <h5 class="font-heading text-lg font-bold text-white flex items-center gap-2">
+        <i class="bi bi-pie-chart text-indigo-400"></i> Project Status
+      </h5>
       
-      {% for item in project_status_data %}
-        <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="text-muted small">{{ item.status_display }}</span>
-            <span class="fw-bold small">{{ item.count }}</span>
+      <div class="space-y-4">
+        {% for item in project_status_data %}
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs">
+              <span class="text-gray-400">{{ item.status_display }}</span>
+              <span class="text-white font-bold">{{ item.count }}</span>
+            </div>
+            <div class="w-full h-1.5 bg-gray-900 border border-white/5 rounded-full overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300
+                {% if item.status == 'completed' %}bg-emerald-500
+                {% elif item.status == 'in_progress' %}bg-sky-500
+                {% elif item.status == 'cancelled' %}bg-rose-500
+                {% else %}bg-amber-500{% endif %}" 
+                style="width: {{ item.percentage }}%"></div>
+            </div>
           </div>
-          <div class="progress bg-dark" style="height: 8px;">
-            <div class="progress-bar {% if item.status == 'completed' %}bg-success{% elif item.status == 'in_progress' %}bg-info{% elif item.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}" 
-                 role="progressbar" 
-                 style="width: {{ item.percentage }}%" 
-                 aria-valuenow="{{ item.count }}" 
-                 aria-valuemin="0" 
-                 aria-valuemax="{{ total_projects }}"></div>
-          </div>
-        </div>
-      {% empty %}
-        <p class="text-dimmed text-center my-4">No project status data available.</p>
-      {% endfor %}
+        {% empty %}
+          <p class="text-xs text-gray-500 text-center py-6">No project status data available.</p>
+        {% endfor %}
+      </div>
     </div>
   </div>
 
   <!-- Audit Activity Logs -->
-  <div class="col-lg-7">
-    <div class="glass-card">
-      <h5 class="fw-bold mb-4"><i class="bi bi-journal-text me-2 text-primary"></i>Recent System Activities</h5>
-      <div class="table-responsive">
-        <table class="table table-dark table-hover table-borderless small">
-          <thead>
-            <tr class="text-dimmed border-bottom border-secondary">
-              <th>User</th>
-              <th>Action</th>
-              <th>Details</th>
-              <th class="text-end">Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for log in recent_activities %}
-              <tr>
-                <td class="fw-bold text-white">{{ log.user.username }}</td>
-                <td><span class="badge bg-secondary">{{ log.action }}</span></td>
-                <td class="text-muted">{{ log.details }}</td>
-                <td class="text-end text-dimmed">{{ log.created_at|date:"M d, H:i" }}</td>
+  <div class="lg:col-span-7">
+    <div class="glass p-6 rounded-2xl border border-white/5 space-y-5 h-full">
+      <h5 class="font-heading text-lg font-bold text-white flex items-center gap-2">
+        <i class="bi bi-journal-text text-indigo-400"></i> Recent System Activities
+      </h5>
+      
+      <div class="overflow-hidden border border-white/5 rounded-2xl bg-gray-950/40">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-white/5 bg-gray-950/40">
+                <th class="p-3 font-semibold text-gray-400 uppercase tracking-wider">User</th>
+                <th class="p-3 font-semibold text-gray-400 uppercase tracking-wider">Action</th>
+                <th class="p-3 font-semibold text-gray-400 uppercase tracking-wider">Details</th>
+                <th class="p-3 font-semibold text-gray-400 uppercase tracking-wider text-right">Time</th>
               </tr>
-            {% empty %}
-              <tr>
-                <td colspan="4" class="text-center text-dimmed py-4">No activities logged yet.</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              {% for log in recent_activities %}
+                <tr class="hover:bg-white/[0.01] transition-colors">
+                  <td class="p-3 font-bold text-white">{{ log.user.username }}</td>
+                  <td class="p-3">
+                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-gray-400 border border-gray-700">
+                      {{ log.action }}
+                    </span>
+                  </td>
+                  <td class="p-3 text-gray-400 leading-normal">{{ log.details }}</td>
+                  <td class="p-3 text-gray-500 text-right">{{ log.created_at|date:"M d, H:i" }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="p-8 text-center text-gray-500">No activities logged yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
 {% endblock %}
+
