@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ServiceProvider
+from .models import ServiceProvider, Review
 
 
 @admin.register(ServiceProvider)
@@ -12,3 +12,11 @@ class ServiceProviderAdmin(admin.ModelAdmin):
     def reach_limit(self, obj):
         return obj.reach_limit
     reach_limit.short_description = "Plan Reach"
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ("provider", "customer", "rating", "created_at")
+    list_filter = ("rating", "created_at")
+    search_fields = ("provider__business_name", "customer__name", "comment")
+

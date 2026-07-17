@@ -15,4 +15,6 @@ urlpatterns = [
     path("services/", views.service_manage, name="service_manage"),
     path("services/add/", views.service_add, name="service_add"),
     path("ai-writer/", views.ai_writer, name="ai_writer"),
+    path("projects/<int:project_id>/review/", views.submit_review, name="submit_review"),
 ]
+

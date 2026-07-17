@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
+from django.db import models
+from django.db.models import Avg, Count, Value
+from django.db.models.functions import Coalesce
 import os
 import logging
 from supercompress.client import SuperCompress
@@ -14,12 +17,31 @@ logger = logging.getLogger(__name__)
 def provider_list(request):
     category = request.GET.get("category", "")
     city = request.GET.get("city", "").strip()
+    min_rating = request.GET.get("min_rating", "")
+    sort_by = request.GET.get("sort_by", "newest")
 
-    providers = ServiceProvider.objects.filter(is_active=True)
+    # Annotate with average rating (coalesced to 0.0) and review count
+    providers = ServiceProvider.objects.filter(is_active=True).annotate(
+        avg_rating=Coalesce(Avg("reviews__rating"), Value(0.0), output_field=models.FloatField()),
+        num_reviews=Count("reviews")
+    )
+
     if category:
         providers = providers.filter(category=category)
     if city:
         providers = providers.filter(city__icontains=city)
+    if min_rating:
+        try:
+            providers = providers.filter(avg_rating__gte=float(min_rating))
+        except ValueError:
+            pass
+
+    if sort_by == "highest_rated":
+        providers = providers.order_by("-avg_rating", "-num_reviews", "-created_at")
+    elif sort_by == "most_reviewed":
+        providers = providers.order_by("-num_reviews", "-avg_rating", "-created_at")
+    else:  # newest
+        providers = providers.order_by("-created_at")
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return render(request, "services/partials/provider_cards.html", {"providers": providers})
@@ -29,17 +51,76 @@ def provider_list(request):
         "categories": SERVICE_CATEGORIES,
         "category": category,
         "city": city,
+        "min_rating": min_rating,
+        "sort_by": sort_by,
     })
 
 
 def provider_detail(request, pk):
     provider = get_object_or_404(ServiceProvider, pk=pk, is_active=True)
+    reviews = provider.reviews.all().select_related("customer")
+    avg_rating_data = reviews.aggregate(avg=Avg("rating"))
+    avg_rating = avg_rating_data["avg"]
+    
     return render(request, "services/provider_detail.html", {
         "provider": provider,
         "services": [],
-        "reviews": [],
-        "avg_rating": None,
+        "reviews": reviews,
+        "avg_rating": avg_rating,
     })
+
+
+def submit_review(request, project_id):
+    from projects.models import Project
+    from customers.models import Customer
+    from .models import Review
+
+    project = get_object_or_404(Project, pk=project_id)
+
+    # 1. Verify project is completed
+    if project.status != "completed":
+        messages.error(request, "You can only review a service after the project is completed.")
+        return redirect("services:provider_detail", pk=project.provider.pk)
+
+    # 2. Check if a review already exists for this project
+    if hasattr(project, "review"):
+        messages.error(request, "A review has already been submitted for this project.")
+        return redirect("services:provider_detail", pk=project.provider.pk)
+
+    if request.method == "POST":
+        rating_str = request.POST.get("rating")
+        comment = request.POST.get("comment", "").strip()
+
+        try:
+            rating = int(rating_str)
+            if rating < 1 or rating > 5:
+                raise ValueError()
+        except (TypeError, ValueError):
+            messages.error(request, "Please provide a valid rating between 1 and 5.")
+            return render(request, "services/review_form.html", {"project": project})
+
+        if not comment:
+            messages.error(request, "Please provide a review comment.")
+            return render(request, "services/review_form.html", {"project": project})
+
+        customer = project.customer
+        if not customer:
+            messages.error(request, "This project has no associated customer.")
+            return redirect("services:provider_detail", pk=project.provider.pk)
+
+        Review.objects.create(
+            provider=project.provider,
+            customer=customer,
+            project=project,
+            rating=rating,
+            comment=comment
+        )
+
+        messages.success(request, f"Thank you! Your review for {project.provider.business_name} has been submitted.")
+        return redirect("services:provider_detail", pk=project.provider.pk)
+
+    return render(request, "services/review_form.html", {"project": project})
+
 
 
 @login_required

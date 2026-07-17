@@ -76,3 +76,19 @@ class ServiceProvider(models.Model):
         if sub:
             return sub.plan.reach_limit
         return settings.PLAN_REACH_LIMITS["basic"]
+
+
+class Review(models.Model):
+    provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, related_name="reviews")
+    customer = models.ForeignKey("customers.Customer", on_delete=models.CASCADE, related_name="reviews")
+    project = models.OneToOneField("projects.Project", on_delete=models.SET_NULL, null=True, blank=True, related_name="review")
+    rating = models.PositiveSmallIntegerField(choices=[(i, f"{i} Stars") for i in range(1, 6)])
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Review ({self.rating}★) for {self.provider.business_name} by {self.customer.name}"
+

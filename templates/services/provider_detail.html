@@ -68,7 +68,7 @@
           {% for review in reviews %}
           <div class="glass p-5 rounded-2xl border border-white/5 space-y-2">
             <div class="flex items-center justify-between gap-4">
-              <strong class="text-sm font-bold text-white">{{ review.customer.username }}</strong>
+              <strong class="text-sm font-bold text-white">{{ review.customer.name }}</strong>
               <div class="flex items-center gap-0.5 text-xs text-amber-400">
                 {% for i in "12345" %}
                   {% if forloop.counter <= review.rating %}
