@@ -53,13 +53,29 @@ class ServiceProvider(models.Model):
     website = models.URLField(blank=True)
 
     is_active = models.BooleanField(default=True)
+    promo_code = models.CharField(max_length=50, unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # 1. Auto-generate unique promo code if not set
+        if not self.promo_code:
+            import uuid
+            business_prefix = "".join(filter(str.isalnum, self.business_name)).upper()[:4]
+            random_suffix = str(uuid.uuid4())[:4].upper()
+            self.promo_code = f"PROMO-{business_prefix}-{random_suffix}"
+
+        # 2. Limit system to only ONE active provider at any time
+        if self.is_active:
+            ServiceProvider.objects.exclude(pk=self.pk).update(is_active=False)
+
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["city", "category"]),
+            models.Index(fields=["is_active"]),
         ]
 
     def __str__(self):
@@ -91,4 +107,14 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review ({self.rating}★) for {self.provider.business_name} by {self.customer.name}"
+
+
+class Referral(models.Model):
+    referrer = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, related_name="referral_records")
+    referred_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="referral_info")
+    created_at = models.DateTimeField(auto_now_add=True)
+    rewarded = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Referral: {self.referrer.business_name} -> {self.referred_user.username}"
 

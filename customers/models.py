@@ -51,6 +51,7 @@ class Customer(models.Model):
         ordering = ["city", "name"]
         indexes = [
             models.Index(fields=["city", "name"]),
+            models.Index(fields=["is_active", "opted_in_whatsapp"]),
         ]
 
     def effective_whatsapp(self):

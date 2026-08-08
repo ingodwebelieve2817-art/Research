@@ -10,3 +10,8 @@ psycopg2-binary>=2.9.12
 PyJWT>=2.8.0
 supabase>=2.5.1
 supercompress>=0.1.0
+django-jazzmin>=3.0.0
+gunicorn>=21.2.0
+whitenoise>=6.6.0
+django-redis>=7.0.0
+

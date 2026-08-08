@@ -15,14 +15,25 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import model_to_dict
 
 
+from django.core.cache import cache
+
+
 def plans_page(request):
-    plans = SubscriptionPlan.objects.all().order_by("price_monthly")
-    plans_list = []
-    for p in plans:
-        d = model_to_dict(p)
-        d["price_monthly"] = float(p.price_monthly)
-        plans_list.append(d)
-    plans_json = json.dumps(plans_list, cls=DjangoJSONEncoder)
+    plans_json = cache.get("subscription_plans_json")
+    plans = cache.get("subscription_plans_queryset")
+    
+    if not plans_json or not plans:
+        plans_qs = SubscriptionPlan.objects.all().order_by("price_monthly")
+        plans = list(plans_qs)
+        plans_list = []
+        for p in plans:
+            d = model_to_dict(p)
+            d["price_monthly"] = float(p.price_monthly)
+            plans_list.append(d)
+        plans_json = json.dumps(plans_list, cls=DjangoJSONEncoder)
+        
+        cache.set("subscription_plans_json", plans_json, 3600)
+        cache.set("subscription_plans_queryset", plans, 3600)
     
     return render(request, "subscriptions/plans.html", {
         "plans": plans,

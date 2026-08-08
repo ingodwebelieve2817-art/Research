@@ -12,7 +12,14 @@ export default defineConfig({
       output: {
         entryFileNames: `assets/[name].js`,
         chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
+        assetFileNames: `assets/[name].[ext]`,
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('framer-motion')) return 'vendor-animations';
+            if (id.includes('lucide-react')) return 'vendor-icons';
+            return 'vendor-core';
+          }
+        }
       }
     }
   }

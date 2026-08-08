@@ -3,45 +3,45 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import ProviderRegistrationForm
+from .forms import BusinessRegistrationForm, CustomerRegistrationForm
 
 
 def register(request):
     if request.method == "POST":
-        form = ProviderRegistrationForm(request.POST)
+        form = BusinessRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Account created! Now set up your business profile.")
-            return redirect("services:setup")
+            messages.success(request, "Business account and profile registered successfully!")
+            return redirect("services:dashboard")
     else:
-        form = ProviderRegistrationForm()
+        form = BusinessRegistrationForm()
     return render(request, "accounts/register.html", {"form": form})
 
 
 def register_provider(request):
     if request.method == "POST":
-        form = ProviderRegistrationForm(request.POST)
+        form = BusinessRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Account created! Now set up your business profile.")
-            return redirect("services:setup")
+            messages.success(request, "Business account and profile registered successfully!")
+            return redirect("services:dashboard")
     else:
-        form = ProviderRegistrationForm()
+        form = BusinessRegistrationForm()
     return render(request, "accounts/register_provider.html", {"form": form})
 
 
 def register_customer(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Welcome! Your account has been created.")
+            messages.success(request, "Welcome! Your customer account has been created.")
             return redirect("/")
     else:
-        form = UserCreationForm()
+        form = CustomerRegistrationForm()
     return render(request, "accounts/register_customer.html", {"form": form})
 
 

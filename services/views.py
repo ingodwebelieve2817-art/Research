@@ -56,6 +56,7 @@ def provider_list(request):
     })
 
 
+@login_required
 def provider_detail(request, pk):
     provider = get_object_or_404(ServiceProvider, pk=pk, is_active=True)
     reviews = provider.reviews.all().select_related("customer")
@@ -183,7 +184,7 @@ def dashboard(request):
     if request.user.is_superuser or request.user.is_staff:
         return redirect("admin_dashboard:overview")
     try:
-        provider = request.user.provider_profile
+        provider = ServiceProvider.objects.select_related("user").prefetch_related("subscriptions__plan").get(user=request.user)
     except ServiceProvider.DoesNotExist:
         messages.info(request, "Please complete your business profile first.")
         return redirect("services:setup")

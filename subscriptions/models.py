@@ -59,6 +59,9 @@ class Subscription(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["is_active", "status"]),
+        ]
 
     def __str__(self):
         return f"{self.provider.business_name} — {self.plan.name} ({self.status})"
