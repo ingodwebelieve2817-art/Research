@@ -1,10 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}LocalPro{% endblock %} | LocalPro</title>
-  
+  <title>{% block title %}SakhiZone{% endblock %} | SakhiZone</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/logo.svg' %}"/>
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,10 +93,10 @@
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center gap-8">
           <a class="flex items-center gap-2 font-heading font-extrabold text-xl tracking-tight text-white group" href="{% url 'home' %}">
-            <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
-              <i class="bi bi-tools"></i>
+            <span class="w-8 h-8 rounded-lg overflow-hidden border border-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
+              <img src="{% static 'img/logo.svg' %}" alt="SakhiZone" class="w-full h-full object-cover"/>
             </span>
-            <span>Local<span class="text-indigo-400">Pro</span></span>
+            <span>Sakhi<span class="text-indigo-400">Zone</span></span>
           </a>
           
           <div class="flex items-center gap-0.5 sm:gap-1">
@@ -183,7 +185,7 @@
   <!-- Footer -->
   <footer class="border-t border-white/5 py-8 mt-16 bg-gray-950/20 backdrop-blur-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <p class="text-xs text-gray-500">&copy; 2026 LocalPro &mdash; Connecting Communities with Local Talent</p>
+      <p class="text-xs text-gray-500">&copy; 2026 SakhiZone &mdash; Connecting Communities with Local Talent</p>
     </div>
   </footer>
 

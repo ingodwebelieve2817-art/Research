@@ -172,7 +172,7 @@ def _activate_subscription(provider, plan, payment_ref=""):
 def _send_confirmation_email(request, subscription):
     plan = subscription.plan
     provider = subscription.provider
-    subject = f"Your {plan.name} subscription is active — LocalPro"
+    subject = f"Your {plan.name} subscription is active — SakhiZone"
     body = (
         f"Hi {provider.user.username},\n\n"
         f"Your {plan.name} plan is now active!\n\n"
@@ -185,6 +185,6 @@ def _send_confirmation_email(request, subscription):
         f"We are now reaching out to customers in {provider.city} who need "
         f"{provider.get_category_display()} services.\n\n"
         f"Manage your plan: {request.build_absolute_uri('/subscriptions/my-plan/')}\n\n"
-        f"Thanks,\nThe LocalPro Team"
+        f"Thanks,\nThe SakhiZone Team"
     )
     send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [provider.user.email], fail_silently=True)

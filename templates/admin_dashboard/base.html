@@ -1,10 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}Admin Overview{% endblock %} | LocalPro Admin</title>
-  
+  <title>{% block title %}Admin Overview{% endblock %} | SakhiZone Admin</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/logo.svg' %}"/>
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,10 +84,10 @@
     <div class="px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <a class="flex items-center gap-2 font-heading font-extrabold text-xl tracking-tight text-white group" href="{% url 'admin_dashboard:overview' %}">
-          <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
-            <i class="bi bi-shield-lock-fill"></i>
+          <span class="w-8 h-8 rounded-lg overflow-hidden border border-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
+            <img src="{% static 'img/logo.svg' %}" alt="SakhiZone" class="w-full h-full object-cover"/>
           </span>
-          <span>LocalPro <span class="text-xs font-normal text-gray-500 font-sans ml-1 bg-gray-900 border border-white/5 px-2 py-0.5 rounded-full">Admin Portal</span></span>
+          <span>SakhiZone <span class="text-xs font-normal text-gray-500 font-sans ml-1 bg-gray-900 border border-white/5 px-2 py-0.5 rounded-full">Admin Portal</span></span>
         </a>
         
         <div class="flex items-center gap-4">
