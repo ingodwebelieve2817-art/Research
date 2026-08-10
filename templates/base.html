@@ -1,87 +1,45 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}LocalPro{% endblock %} | LocalPro</title>
   
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Layout-critical CSS: render-blocking so browser paints styled content immediately -->
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+
+  <!-- Non-critical icons: async preload, not needed for first paint -->
+  <link rel="preload" href="{% static 'css/bootstrap-icons.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{% static 'css/bootstrap-icons.css' %}"></noscript>
+
+  <title>{% block title %}Grow Your Local Business{% endblock %} | LocalPro</title>
+  <meta name="description" content="{% block meta_description %}Register your local business and start acquiring qualified customer leads on WhatsApp and Facebook automatically.{% endblock %}">
   
-  <!-- Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:title" content="{% block og_title %}{% block title_og %}LocalPro - Grow Your Local Business{% endblock %}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Match with ready-to-book local customers and dispatch campaigns automatically.{% endblock %}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}/static/images/social_share.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+  <meta property="twitter:title" content="{% block twitter_title %}LocalPro - Grow Your Local Business{% endblock %}">
+  <meta property="twitter:description" content="{% block twitter_description %}Match with local customer requests via automated campaigns.{% endblock %}">
+  <meta property="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}/static/images/social_share.png">
+
+  <!-- Google Analytics -->
+  {% if GOOGLE_ANALYTICS_ID %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID }}"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            heading: ['Outfit', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              dark: '#030712',
-              card: '#0b0f19',
-              accent: '#6366f1',
-              accentHover: '#4f46e5',
-            }
-          },
-          boxShadow: {
-            'glow': '0 0 25px -5px rgba(99, 102, 241, 0.2)',
-          }
-        }
-      }
-    }
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ GOOGLE_ANALYTICS_ID }}');
   </script>
-  
-  <style type="text/tailwindcss">
-    @layer base {
-      body {
-        @apply bg-[#030712] text-gray-100 font-sans antialiased selection:bg-indigo-500 selection:text-white;
-      }
-      
-      /* Global Django Form Input styling */
-      input[type="text"],
-      input[type="email"],
-      input[type="password"],
-      input[type="tel"],
-      input[type="url"],
-      input[type="number"],
-      select,
-      textarea {
-        @apply w-full px-4 py-2.5 rounded-xl bg-gray-900/60 border border-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 focus:bg-gray-900 transition-all duration-200;
-      }
-      
-      input[type="checkbox"] {
-        @apply rounded border-gray-800 bg-gray-900/60 text-indigo-600 focus:ring-indigo-500/30 focus:ring-offset-gray-950 w-5 h-5 cursor-pointer;
-      }
-
-      /* Scrollbar styling */
-      ::-webkit-scrollbar {
-        @apply w-2 h-2;
-      }
-      ::-webkit-scrollbar-track {
-        @apply bg-gray-950;
-      }
-      ::-webkit-scrollbar-thumb {
-        @apply bg-gray-800 rounded-full hover:bg-gray-700 transition-colors;
-      }
-    }
-
-    .glass {
-      @apply bg-[#0b0f19]/80 backdrop-blur-xl border border-white/5;
-    }
-
-    .text-gradient {
-      @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400;
-    }
-  </style>
+  {% endif %}
 </head>
 <body class="min-h-screen flex flex-col justify-between">
   
@@ -181,9 +139,47 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-white/5 py-8 mt-16 bg-gray-950/20 backdrop-blur-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <p class="text-xs text-gray-500">&copy; 2026 LocalPro &mdash; Connecting Communities with Local Talent</p>
+  <footer class="border-t border-white/5 bg-gray-950/40 backdrop-blur-md pt-16 pb-12 mt-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <div class="space-y-4">
+          <a class="flex items-center gap-2 font-heading font-extrabold text-lg text-white" href="{% url 'home' %}">
+            <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <i class="bi bi-tools"></i>
+            </span>
+            <span>Local<span class="text-indigo-400">Pro</span></span>
+          </a>
+          <p class="text-xs text-gray-500 leading-relaxed">
+            The intelligent automated platform matching local service providers with active, ready-to-book customers.
+          </p>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Discover</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="{% url 'services:provider_list' %}" class="text-gray-500 hover:text-white transition-colors">Find Providers</a></li>
+            <li><a href="{% url 'subscriptions:plans' %}" class="text-gray-500 hover:text-white transition-colors">Subscription Pricing</a></li>
+            <li><a href="{% url 'services:case_studies' %}" class="text-gray-500 hover:text-white transition-colors">Case Studies</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Business Solutions</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="{% url 'accounts:register_provider' %}" class="text-gray-500 hover:text-white transition-colors">List Your Business</a></li>
+            <li><a href="{% url 'accounts:login' %}" class="text-gray-500 hover:text-white transition-colors">Merchant Portal</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Legal</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="{% url 'services:privacy' %}" class="text-gray-500 hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="{% url 'services:privacy' %}#terms" class="text-gray-500 hover:text-white transition-colors">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-8 text-center flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-gray-600">&copy; 2026 LocalPro. All rights reserved.</p>
+        <p class="text-xs text-gray-600">Designed for speed, scalability, and local reach.</p>
+      </div>
     </div>
   </footer>
 

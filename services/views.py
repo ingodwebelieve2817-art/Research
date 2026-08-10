@@ -58,16 +58,23 @@ def provider_list(request):
 
 @login_required
 def provider_detail(request, pk):
+    from django.urls import reverse
     provider = get_object_or_404(ServiceProvider, pk=pk, is_active=True)
     reviews = provider.reviews.all().select_related("customer")
     avg_rating_data = reviews.aggregate(avg=Avg("rating"))
     avg_rating = avg_rating_data["avg"]
+    
+    breadcrumbs = [
+        ("Providers", reverse("services:provider_list")),
+        (provider.business_name, ""),
+    ]
     
     return render(request, "services/provider_detail.html", {
         "provider": provider,
         "services": [],
         "reviews": reviews,
         "avg_rating": avg_rating,
+        "breadcrumbs": breadcrumbs,
     })
 
 
@@ -118,7 +125,7 @@ def submit_review(request, project_id):
         )
 
         messages.success(request, f"Thank you! Your review for {project.provider.business_name} has been submitted.")
-        return redirect("services:provider_detail", pk=project.provider.pk)
+        return redirect("services:thank_you")
 
     return render(request, "services/review_form.html", {"project": project})
 
@@ -307,3 +314,15 @@ def ai_writer(request):
         "supercompress_api_configured": bool(os.getenv("SUPERCOMPRESS_API_KEY")),
         "gemini_api_configured": bool(os.getenv("GEMINI_API_KEY")),
     })
+
+
+def case_studies(request):
+    return render(request, "case_studies.html")
+
+
+def privacy(request):
+    return render(request, "privacy.html")
+
+
+def thank_you(request):
+    return render(request, "thank_you.html")

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy{% endblock %}
+{% block meta_description %}Privacy Policy and Data Protection guidelines for LocalPro customers and service providers.{% endblock %}
+
+{% block content %}
+<section class="relative pt-20 pb-16 overflow-hidden">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none"></div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="glass p-8 sm:p-12 rounded-3xl border border-white/5 shadow-2xl">
+      <h1 class="font-heading text-3xl sm:text-4xl font-extrabold text-white mb-6">Privacy Policy</h1>
+      <p class="text-xs text-gray-500 mb-8">Last Updated: August 10, 2026</p>
+
+      <div class="space-y-8 text-sm text-gray-300 leading-relaxed">
+        <div>
+          <h2 class="text-lg font-bold text-white mb-3">1. Information We Collect</h2>
+          <p class="mb-3">
+            We collect information you provide directly to us when registering a customer or business account. This includes name, business category, location, phone number, email address, and payment information.
+          </p>
+          <p>
+            When matching customers with service providers, we process location and service request parameters to automatically dispatch campaigns.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-lg font-bold text-white mb-3">2. How We Use Your Information</h2>
+          <p class="mb-3">
+            We use the information we collect to operate, maintain, and improve our services, including matching customers with relevant local businesses and dispatching messaging campaigns.
+          </p>
+          <p>
+            We will never sell or rent your personal information to third parties. Phone numbers are utilized solely for automated outreach requested by providers.
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-lg font-bold text-white mb-3" id="terms">3. Data Security & Storage</h2>
+          <p>
+            Your information is stored in secure database instances hosted by our infrastructure providers (Supabase). We employ industry-standard encryption, SSL protocols, and access controls to secure your personal records.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-white/5 border border-white/5 text-xs text-indigo-300 font-medium">
+          <i class="bi bi-info-circle mr-1.5 text-sm"></i> Note: This policy meets general regulatory standards. Users are encouraged to obtain independent legal advice prior to deploying this platform commercially.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Case Studies - LocalPro Success Stories{% endblock %}
+{% block meta_description %}See how local service providers scaled their customer acquisition by 10x using LocalPro's automated WhatsApp campaigns.{% endblock %}
+
+{% block content %}
+<section class="relative pt-20 pb-16 overflow-hidden">
+  <!-- Glowing Spotlight -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center mb-16">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold uppercase tracking-wider mb-4">
+        <i class="bi bi-graph-up-arrow"></i> Real Results
+      </span>
+      <h1 class="font-heading text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-6">
+        LocalPro <span class="text-gradient">Case Studies</span>
+      </h1>
+      <p class="text-gray-400 text-base max-w-xl mx-auto leading-relaxed">
+        Discover how real merchants and service providers leveraged automated localized outreach campaigns to connect with local demand.
+      </p>
+    </div>
+
+    <div class="space-y-12">
+      <!-- Case Study 1 -->
+      <div class="glass p-8 sm:p-12 rounded-3xl border border-white/5 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-white/5">
+          <div>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase">Home Cleaning Services</span>
+            <h2 class="font-heading text-2xl font-bold text-white mt-2">SparkleClean Ltd</h2>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-extrabold text-emerald-400">84% Match Rate</div>
+            <div class="text-[10px] text-gray-500 uppercase font-semibold">Campaign Outcome</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-300">
+          <div>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">The Problem</h3>
+            <p class="leading-relaxed mb-6">
+              SparkleClean needed to fill open booking slots during weekday afternoons. Traditional local flyers and static social ads yielded a high cost-per-click without guaranteed localized bookings.
+            </p>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Our Approach</h3>
+            <p class="leading-relaxed">
+              We mapped their service area in Mumbai and automatically matched their availability with active cleaning requests from local residents in their target zip codes.
+            </p>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Implementation</h3>
+            <p class="leading-relaxed mb-6">
+              Using the Pro plan, we dispatched direct automated WhatsApp notifications containing a quick-book calendar link to 100 residents who requested housekeepers.
+            </p>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">The Outcome</h3>
+            <p class="leading-relaxed font-semibold text-white">
+              Secured 18 new repeat customer bookings within 72 hours of the campaign trigger, resulting in Rs. 24,000+ in recurring monthly revenue.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Case Study 2 -->
+      <div class="glass p-8 sm:p-12 rounded-3xl border border-white/5 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-white/5">
+          <div>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase">Plumbing &amp; Repairs</span>
+            <h2 class="font-heading text-2xl font-bold text-white mt-2">Apex Plumbing Works</h2>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-extrabold text-emerald-400">120+ Leads/Mo</div>
+            <div class="text-[10px] text-gray-500 uppercase font-semibold">Outreach Performance</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-300">
+          <div>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">The Problem</h3>
+            <p class="leading-relaxed mb-6">
+              Plumbing works suffer from erratic demand. Apex Plumbing lacked a systematic way to connect with homeowners requiring urgent maintenance services within a 15km radius.
+            </p>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Our Approach</h3>
+            <p class="leading-relaxed">
+              We connected their profile database with our real-time local search scanner to match emergency plumbing search metrics in their target areas.
+            </p>
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Implementation</h3>
+            <p class="leading-relaxed mb-6">
+              Dispatched targeted WhatsApp templates with emergency response SLAs to matching local household registries.
+            </p>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">The Outcome</h3>
+            <p class="leading-relaxed font-semibold text-white">
+              Generated a sustained stream of qualified service requests, keeping their field operations team fully booked every week.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="mt-16 text-center">
+      <h3 class="text-xl font-bold text-white mb-4">Ready to Write Your Own Success Story?</h3>
+      <a href="{% url 'accounts:register_provider' %}" class="inline-block px-8 py-4 rounded-xl text-base font-semibold bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-200">
+        Register Your Business Today
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

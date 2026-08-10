@@ -79,6 +79,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "localservices.context_processors.analytics",
             ],
         },
     },
@@ -205,8 +206,8 @@ JAZZMIN_SETTINGS = {
     "search_model": ["customers.Customer", "services.ServiceProvider"],
     "user_avatar": None,
     "topmenu_links": [
-        {"name": "Home", "url": "home", "permissions": ["auth.view_user"]},
-        {"model": "auth.User"},
+        {"name": "Home", "url": "home", "permissions": ["accounts.view_user"]},
+        {"model": "accounts.User"},
     ],
     "show_sidebar": True,
     "navigation_expanded": True,
@@ -276,4 +277,6 @@ CACHES = {
         }
     }
 }
+
+GOOGLE_ANALYTICS_ID = os.getenv("GOOGLE_ANALYTICS_ID", "")
 

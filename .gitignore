@@ -6,3 +6,14 @@ db.sqlite3
 media/
 staticfiles/
 .DS_Store
+
+# Node
+node_modules/
+
+# Generated build outputs (created at Docker build time)
+static/css/tailwind.css
+static/css/fonts.css
+static/css/bootstrap-icons.css
+static/css/fonts/
+static/fonts/
+static/src/

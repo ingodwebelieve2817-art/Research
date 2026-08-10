@@ -10,7 +10,7 @@
   <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 shadow-xl space-y-6">
     <div class="flex items-center gap-4 border-b border-white/5 pb-6">
       {% if user.avatar %}
-        <img src="{{ user.avatar.url }}" class="rounded-2xl border-2 border-white/10 w-16 h-16 object-cover shadow-lg"/>
+        <img src="{{ user.avatar.url }}" alt="{{ user.username }}'s Avatar" class="rounded-2xl border-2 border-white/10 w-16 h-16 object-cover shadow-lg"/>
       {% else %}
         <div class="rounded-2xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-400 w-16 h-16 flex items-center justify-center text-2xl font-bold">
           {{ user.username|first|upper }}

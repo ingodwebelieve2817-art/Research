@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Provider Detail - {{ provider.business_name }}{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+{% include "partials/breadcrumbs.html" %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <!-- Main Column (Left) -->
     <div class="lg:col-span-2 space-y-10">
       {% if provider.cover_image %}
       <div class="h-64 sm:h-80 rounded-2xl overflow-hidden border border-white/5 relative bg-gray-900">
-        <img src="{{ provider.cover_image.url }}" class="w-full h-full object-cover"/>
+        <img src="{{ provider.cover_image.url }}" alt="{{ provider.business_name }} Cover Banner" class="w-full h-full object-cover"/>
       </div>
       {% endif %}
 
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div class="flex items-center gap-4">
           {% if provider.logo %}
-            <img src="{{ provider.logo.url }}" class="rounded-2xl border-4 border-gray-950 bg-gray-900 w-20 h-20 object-cover shadow-lg"/>
+            <img src="{{ provider.logo.url }}" alt="{{ provider.business_name }} Logo" class="rounded-2xl border-4 border-gray-950 bg-gray-900 w-20 h-20 object-cover shadow-lg"/>
           {% endif %}
           <div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white mb-1.5 flex items-center gap-2">
@@ -131,6 +132,20 @@
           {% endif %}
         </div>
 
+        <div class="p-3 rounded-xl bg-white/5 border border-white/5 text-[10px] text-indigo-300 font-medium flex items-center gap-1.5 mt-4">
+          <i class="bi bi-clock-history"></i> Response SLA: Typically responds within 24 hours.
+        </div>
+
+        {% if provider.address or provider.city %}
+        <div class="border-t border-white/5 pt-4 mt-4 space-y-2">
+          <div class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Business Location</div>
+          <p class="text-xs text-gray-300">{{ provider.address }}{% if provider.address %}, {% endif %}{{ provider.city }}</p>
+          <a href="https://www.google.com/maps/search/?api=1&query={{ provider.business_name|urlencode }}+{{ provider.city|urlencode }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition-colors mt-1">
+            <i class="bi bi-geo-alt"></i> Get Directions
+          </a>
+        </div>
+        {% endif %}
+
         <div class="border-t border-white/5 pt-4 text-[10px] text-gray-500 flex items-center gap-1.5">
           <i class="bi bi-clock"></i> Member since {{ provider.created_at|date:"Y" }}
         </div>
@@ -139,4 +154,45 @@
 
   </div>
 </div>
+
+<!-- Sticky Mobile CTA -->
+<div id="mobile-sticky-cta" class="md:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-gray-950/90 border-t border-white/10 backdrop-blur-lg flex items-center justify-between gap-4 transition-transform duration-300">
+  <div class="flex flex-col">
+    <span class="text-[10px] text-gray-400 uppercase font-semibold">Response Guarantee</span>
+    <span class="text-xs text-white font-bold">Message SLA &lt; 24h</span>
+  </div>
+  <div class="flex items-center gap-2">
+    {% if provider.whatsapp_number %}
+    <a href="https://wa.me/{{ provider.whatsapp_number|cut:'+' }}" target="_blank" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors flex items-center gap-1.5">
+      <i class="bi bi-whatsapp"></i> Chat Now
+    </a>
+    {% endif %}
+    <button onclick="document.getElementById('mobile-sticky-cta').remove()" aria-label="Dismiss sticky CTA" class="p-2 rounded-xl text-gray-500 hover:text-white transition-colors bg-white/5 border border-white/5">
+      <i class="bi bi-x-lg text-xs"></i>
+    </button>
+  </div>
+</div>
+
+<!-- LocalBusiness Structured Data Schema.org JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "{{ provider.business_name }}",
+  "image": "{{ request.scheme }}://{{ request.get_host }}{{ provider.logo.url|default:'/static/images/social_share.png' }}",
+  "telephone": "{{ provider.whatsapp_number|default:'' }}",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "{{ provider.city }}",
+    "streetAddress": "{{ provider.address|default:'' }}",
+    "addressCountry": "IN"
+  },
+  "url": "{{ request.build_absolute_uri }}",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ avg_rating|default:'5.0' }}",
+    "reviewCount": "{{ reviews.count|default:'1' }}"
+  }
+}
+</script>
 {% endblock %}
