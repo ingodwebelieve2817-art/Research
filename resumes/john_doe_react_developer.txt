@@ -1,0 +1,40 @@
+JOHN DOE
+Email: john.doe@email.com
+Phone: (555) 019-2834
+LinkedIn: linkedin.com/in/johndoe-dev
+Portfolio: johndoe.dev
+
+PROFESSIONAL SUMMARY
+Senior Frontend Engineer with over 6 years of experience specializing in React, TypeScript, and high-performance web applications. Proven track record of architecting scalable UI codebases, optimizing web vitals, and mentoring junior developers. Experienced in modern build systems (Vite, Webpack), state management (Redux, Zustand), and responsive CSS.
+
+WORK EXPERIENCE
+
+Senior React Developer
+TechFlow Solutions | Jan 2023 - Present
+- Led a team of 4 developers to rebuild a legacy AngularJS dashboard to React 18 & TypeScript, improving load time by 42%.
+- Designed and built a reusable React component library used across 3 separate company products, slashing frontend development cycles by 30%.
+- Integrated state management via Redux Toolkit and Context API to manage complex real-time streaming data.
+- Configured CI/CD pipelines with GitHub Actions for automated linting, testing, and deployment to AWS S3/CloudFront.
+
+Frontend Engineer
+PixelCraft Digital | Aug 2020 - Dec 2022
+- Maintained and expanded a customer-facing e-commerce application using React and Next.js.
+- Implemented SEO best practices and responsive HTML/CSS designs, boosting mobile organic traffic by 25%.
+- Wrote unit and integration tests using Jest and React Testing Library, raising test coverage from 60% to 88%.
+- Optimized bundle sizes and assets to achieve an average Lighthouse score of 95+ across core web vitals.
+
+Software Engineer (Intern)
+CodeBase Labs | Jun 2019 - Jul 2020
+- Developed features for client websites using JavaScript, HTML5, and CSS3.
+- Assisted in migration of backend APIs to Node.js, facilitating smooth data rendering on the frontend.
+- Fixed UI bugs and resolved cross-browser compatibility issues.
+
+TECHNICAL SKILLS
+- Languages: JavaScript (ES6+), TypeScript, HTML5, CSS3, SQL
+- Frameworks & Libraries: React, Next.js, Redux Toolkit, Context API, Zustand, Tailwind CSS, Bootstrap
+- Tools & Utilities: Git, Vite, Webpack, Jest, React Testing Library, AWS, Docker, CI/CD (GitHub Actions)
+- Methodologies: Agile/Scrum, Responsive Design, Web Accessibility (WCAG)
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of Technology | 2016 - 2020

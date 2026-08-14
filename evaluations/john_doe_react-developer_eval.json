@@ -1,0 +1,31 @@
+{
+  "candidate_name": "John Doe",
+  "email": "john.doe@email.com",
+  "skills": [
+    "React",
+    "TypeScript",
+    "JavaScript",
+    "HTML",
+    "CSS",
+    "Redux Toolkit",
+    "Next.js",
+    "Jest",
+    "Vite",
+    "AWS"
+  ],
+  "education": "Bachelor of Science in Computer Science, University of Technology",
+  "years_of_experience": 6.5,
+  "relevant_experience": "6 years of frontend experience, leading React migration project and designing component libraries.",
+  "job_role_match_score": 95,
+  "skill_match_score": 90,
+  "overall_candidate_score": 92,
+  "strengths": [
+    "Strong technical alignment with React, TypeScript, and state management (Redux).",
+    "Demonstrated leadership leading a migration from AngularJS to React 18.",
+    "Excellent testing practices with Jest and React Testing Library (88% coverage)."
+  ],
+  "missing_requirements": [],
+  "decision": "Shortlist",
+  "reason_for_recommendation": "Candidate exceeds threshold of 80 with a score of 92%. He possesses extensive experience in React/TypeScript, has led development teams, and maintains high standards for testing and optimization.",
+  "personalized_email_draft": "Subject: Interview Invitation: Senior React Developer - John Doe\n\nHi John,\n\nThank you for applying for the Senior React Developer position at TechFlow Solutions. Our team was highly impressed by your resume, particularly your leadership in rebuilding the legacy dashboard using React 18 & TypeScript and your solid focus on testing with Jest.\n\nWe would love to invite you for a 45-minute technical video interview to learn more about your experience and discuss the role. Please select a convenient time using our scheduling link: https://calendly.com/recruitment/react-dev-interview\n\nLooking forward to speaking with you!\n\nBest regards,\nRecruitment Team"
+}

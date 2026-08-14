@@ -1,0 +1,43 @@
+{
+  "job_profiles": [
+    {
+      "id": "react-developer",
+      "title": "Senior React Developer",
+      "department": "Engineering",
+      "threshold_score": 80,
+      "requirements": {
+        "min_experience_years": 5,
+        "required_skills": ["React", "TypeScript", "JavaScript", "HTML", "CSS", "State Management", "Redux", "Context API"],
+        "preferred_skills": ["Next.js", "Vite", "Testing Library", "CI/CD", "Web Performance Optimization"],
+        "education": "Bachelor's degree in Computer Science or equivalent experience"
+      },
+      "job_description": "We are looking for a Senior React Developer to join our team. You will be responsible for building high-performance, modular, and visually stunning web applications. You will collaborate closely with designers and product managers to deliver top-tier user experiences. You must have deep expertise in React state management, performance optimization, and writing clean, scalable TypeScript."
+    },
+    {
+      "id": "ai-engineer",
+      "title": "AI/ML Engineer",
+      "department": "AI Innovation",
+      "threshold_score": 85,
+      "requirements": {
+        "min_experience_years": 3,
+        "required_skills": ["Python", "Machine Learning", "LLMs", "Prompt Engineering", "PyTorch", "TensorFlow", "API Integration"],
+        "preferred_skills": ["LangChain", "Vector Databases", "Retrieval Augmented Generation (RAG)", "n8n", "Docker"],
+        "education": "Master's or Bachelor's degree in Computer Science, AI, or equivalent technical background"
+      },
+      "job_description": "We are seeking an AI/ML Engineer to build advanced agentic workflows and integrate Large Language Models into our business products. You will work on designing RAG pipelines, fine-tuning prompts, creating workflows, and optimizing AI agents for reliability and speed. Experience building workflows in tools like n8n or LangGraph is highly desired."
+    },
+    {
+      "id": "product-manager",
+      "title": "Technical Product Manager",
+      "department": "Product",
+      "threshold_score": 75,
+      "requirements": {
+        "min_experience_years": 4,
+        "required_skills": ["Product Strategy", "Roadmapping", "Agile", "Scrum", "API Design", "Data Analytics", "SQL"],
+        "preferred_skills": ["Technical background", "Jira", "Mixpanel", "UX/UI basics"],
+        "education": "Bachelor's degree in Business, Computer Science, or related field"
+      },
+      "job_description": "We are looking for a Technical Product Manager to lead the roadmap and execution of our AI developer tools. You will bridge the gap between business requirements and technical implementation, writing comprehensive PRDs, running agile sprints, and defining key product metrics."
+    }
+  ]
+}

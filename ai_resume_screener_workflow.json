@@ -1,0 +1,525 @@
+{
+  "name": "AI Resume Screening & Recruitment Automation System",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e2f1dbbb-7b56-4b68-9a4f-cc8109bf1fba",
+      "name": "When Page Loads / Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "event": "fileCreated",
+        "folderId": "incoming-resumes-folder-id",
+        "options": {
+          "fields": [
+            "id",
+            "name",
+            "mimeType",
+            "createdTime",
+            "webViewLink"
+          ]
+        }
+      },
+      "id": "20875c7b-b8cc-4d33-bc42-f8c5b058a5c3",
+      "name": "Google Drive Trigger (New Resume)",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        140
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "google-drive-oauth2-credential-id",
+          "name": "Google Drive OAuth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileId": "={{ $json.id }}",
+        "options": {}
+      },
+      "id": "a9ef38b4-a4f6-4ca9-bcbe-bf5186b5c32e",
+      "name": "Download Resume PDF",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        140
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "google-drive-oauth2-credential-id",
+          "name": "Google Drive OAuth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "extractText",
+        "binaryPropertyName": "data",
+        "outputFormat": "plainText"
+      },
+      "id": "82f8cc5a-5d9c-497f-9b2f-9818abef0132",
+      "name": "Extract PDF Text",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        540,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o-mini",
+        "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"candidate_name\": {\"type\": \"string\"},\n    \"email\": {\"type\": \"string\"},\n    \"skills\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}},\n    \"education\": {\"type\": \"string\"},\n    \"years_of_experience\": {\"type\": \"number\"},\n    \"relevant_experience\": {\"type\": \"string\"},\n    \"job_role_match_score\": {\"type\": \"integer\"},\n    \"skill_match_score\": {\"type\": \"integer\"},\n    \"overall_candidate_score\": {\"type\": \"integer\"},\n    \"strengths\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}},\n    \"missing_requirements\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}},\n    \"reason_for_recommendation\": {\"type\": \"string\"}\n  },\n  \"required\": [\n    \"candidate_name\", \"email\", \"skills\", \"education\", \"years_of_experience\",\n    \"relevant_experience\", \"job_role_match_score\", \"skill_match_score\",\n    \"overall_candidate_score\", \"strengths\", \"missing_requirements\",\n    \"reason_for_recommendation\"\n  ]\n}",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are a senior recruitment AI. Extract details from the resume text and score it against the target role: Senior React Developer.\nRequired Core Skills: React, TypeScript, Redux, Context API, JavaScript, HTML, CSS.\nRequired experience: 5+ years.\n\nExtract name, email, skills, education, and years of experience. Then score the candidate (0 to 100) on role match, skill match, and overall score. List 3 key strengths and any missing requirements or gaps."
+            },
+            {
+              "role": "user",
+              "message": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "c1f7a8b4-efbe-40f4-a09c-7721867c29e1",
+      "name": "OpenAI Structured Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        760,
+        140
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credential-id",
+          "name": "OpenAI API Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.overall_candidate_score }}",
+              "operation": "largerEqual",
+              "value2": 80
+            }
+          ]
+        }
+      },
+      "id": "76efb4e4-b78b-4b14-8f7d-bb91a56110f0",
+      "name": "IF Score >= Threshold (80)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        980,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "google-sheet-id",
+        "sheetName": "Shortlisted",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate Name": "={{ $json.candidate_name }}",
+            "Email": "={{ $json.email }}",
+            "Role": "Senior React Developer",
+            "Score": "={{ $json.overall_candidate_score }}",
+            "Skills": "={{ $json.skills.join(', ') }}",
+            "Experience (Years)": "={{ $json.years_of_experience }}",
+            "Strengths": "={{ $json.strengths.join(' | ') }}",
+            "Reason": "={{ $json.reason_for_recommendation }}",
+            "Evaluation Date": "={{ $today }}"
+          }
+        }
+      },
+      "id": "3be2b984-cc4a-4632-bd88-04fbc5b3fe9a",
+      "name": "Log Shortlist to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1220,
+        60
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-oauth2-credential-id",
+          "name": "Google Sheets OAuth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "google-sheet-id",
+        "sheetName": "Rejected",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate Name": "={{ $json.candidate_name }}",
+            "Email": "={{ $json.email }}",
+            "Role": "Senior React Developer",
+            "Score": "={{ $json.overall_candidate_score }}",
+            "Skills": "={{ $json.skills.join(', ') }}",
+            "Experience (Years)": "={{ $json.years_of_experience }}",
+            "Missing Gaps": "={{ $json.missing_requirements.join(' | ') }}",
+            "Reason": "={{ $json.reason_for_recommendation }}",
+            "Evaluation Date": "={{ $today }}"
+          }
+        }
+      },
+      "id": "9ce2b984-dc5a-4732-cd88-04fbc5b3fe9b",
+      "name": "Log Rejection to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1220,
+        280
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-sheets-oauth2-credential-id",
+          "name": "Google Sheets OAuth Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o-mini",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are a friendly, highly professional recruitment coordinator. Generate a personalized email inviting the candidate to a technical interview. Mention their specific strengths and achievements that made them stand out.\nKeep it warm and welcoming."
+            },
+            {
+              "role": "user",
+              "message": "=Candidate Name: {{ $json.candidate_name }}\nTarget Role: Senior React Developer\nCandidate Score: {{ $json.overall_candidate_score }}%\nStrengths:\n- {{ $json.strengths.join('\\n- ') }}\nReasoning: {{ $json.reason_for_recommendation }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "id": "d1c1a9bc-9800-410a-b283-fcf18991adfa",
+      "name": "Generate Shortlist Email",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        60
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credential-id",
+          "name": "OpenAI API Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o-mini",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "message": "You are a professional recruitment coordinator. Generate a polite, respectful rejection email. Thank the candidate for their time. Acknowledge at least one of their strengths, but explain that we are looking for candidates with deeper experience in specific core skills they are missing, such as React state management, testing, or 5+ years experience. Wish them success and state we will keep their CV on file.\nBe encouraging and highly respectful."
+            },
+            {
+              "role": "user",
+              "message": "=Candidate Name: {{ $json.candidate_name }}\nTarget Role: Senior React Developer\nCandidate Score: {{ $json.overall_candidate_score }}%\nStrengths:\n- {{ $json.strengths.join('\\n- ') }}\nMissing Requirements:\n- {{ $json.missing_requirements.join('\\n- ') }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "id": "e1c1a9bc-9800-410a-b283-fcf18991adfb",
+      "name": "Generate Rejection Email",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        280
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credential-id",
+          "name": "OpenAI API Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node[\"OpenAI Structured Analysis\"].json.email }}",
+        "subject": "Update on your application: Senior React Developer",
+        "emailType": "text",
+        "bodyText": "={{ $json.choices[0].message.content }}",
+        "options": {}
+      },
+      "id": "f5bc039e-28b9-4d64-9bbf-516d2b512001",
+      "name": "Send Shortlist Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        1660,
+        60
+      ],
+      "credentials": {
+        "gmailOAuth2Api": {
+          "id": "gmail-oauth2-credential-id",
+          "name": "Gmail Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $node[\"OpenAI Structured Analysis\"].json.email }}",
+        "subject": "Update on your application: Senior React Developer",
+        "emailType": "text",
+        "bodyText": "={{ $json.choices[0].message.content }}",
+        "options": {}
+      },
+      "id": "f5bc039e-28b9-4d64-9bbf-516d2b512002",
+      "name": "Send Rejection Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        1660,
+        280
+      ],
+      "credentials": {
+        "gmailOAuth2Api": {
+          "id": "gmail-oauth2-credential-id",
+          "name": "Gmail Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#recruitment-alerts",
+        "text": "=🎉 *New Candidate Shortlisted!* \\n*Name:* {{ $node[\"OpenAI Structured Analysis\"].json.candidate_name }}\\n*Score:* {{ $node[\"OpenAI Structured Analysis\"].json.overall_candidate_score }}%\\n*Experience:* {{ $node[\"OpenAI Structured Analysis\"].json.years_of_experience }} Years\\n*Email:* {{ $node[\"OpenAI Structured Analysis\"].json.email }}\\n\\n*Strengths:*\\n- {{ $node[\"OpenAI Structured Analysis\"].json.strengths.join('\\n- ') }}",
+        "otherOptions": {}
+      },
+      "id": "d04a6012-70b9-482a-a92c-63cf3a1e948c",
+      "name": "Slack Shortlist Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [
+        1880,
+        60
+      ],
+      "credentials": {
+        "slackApi": {
+          "id": "slack-credential-id",
+          "name": "Slack Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#recruitment-logs",
+        "text": "=ℹ️ *Candidate Rejected*\\n*Name:* {{ $node[\"OpenAI Structured Analysis\"].json.candidate_name }}\\n*Score:* {{ $node[\"OpenAI Structured Analysis\"].json.overall_candidate_score }}%\\n*Reason:* {{ $node[\"OpenAI Structured Analysis\"].json.reason_for_recommendation }}",
+        "otherOptions": {}
+      },
+      "id": "d04a6012-70b9-482a-a92c-63cf3a1e948d",
+      "name": "Slack Rejection Log",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [
+        1880,
+        280
+      ],
+      "credentials": {
+        "slackApi": {
+          "id": "slack-credential-id",
+          "name": "Slack Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Google Drive Trigger (New Resume)": {
+      "main": [
+        [
+          {
+            "node": "Download Resume PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Resume PDF": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Structured Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Structured Analysis": {
+      "main": [
+        [
+          {
+            "node": "IF Score >= Threshold (80)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Score >= Threshold (80)": {
+      "main": [
+        [
+          {
+            "node": "Log Shortlist to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Rejection to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Shortlist to Sheets": {
+      "main": [
+        [
+          {
+            "node": "Generate Shortlist Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Rejection to Sheets": {
+      "main": [
+        [
+          {
+            "node": "Generate Rejection Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Shortlist Email": {
+      "main": [
+        [
+          {
+            "node": "Send Shortlist Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Rejection Email": {
+      "main": [
+        [
+          {
+            "node": "Send Rejection Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Shortlist Gmail": {
+      "main": [
+        [
+          {
+            "node": "Slack Shortlist Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Rejection Gmail": {
+      "main": [
+        [
+          {
+            "node": "Slack Rejection Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Page Loads / Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": {
+    "templateCredentialSetup": {
+      "googleDriveOAuth2Api": "googleDriveOAuth2Api",
+      "googleSheetsOAuth2Api": "googleSheetsOAuth2Api",
+      "openAiApi": "openAiApi",
+      "gmailOAuth2Api": "gmailOAuth2Api",
+      "slackApi": "slackApi"
+    }
+  },
+  "pinData": {}
+}

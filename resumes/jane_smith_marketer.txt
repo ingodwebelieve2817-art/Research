@@ -1,0 +1,34 @@
+JANE SMITH
+Email: jane.smith@marketingmail.net
+Phone: (555) 042-9988
+Location: New York, NY
+Portfolio: janesmithmarketing.com
+
+PROFESSIONAL SUMMARY
+Dynamic and results-driven Digital Marketing Specialist with 3+ years of experience managing social media campaigns, SEO strategies, and content creation. Proven ability to boost online engagement, execute email marketing strategies, and analyze traffic metrics using Google Analytics to drive revenue growth.
+
+WORK EXPERIENCE
+
+Digital Marketing Specialist
+BrandElevate Inc. | Mar 2023 - Present
+- Formulated and executed organic SEO strategies, increasing search engine visibility and growing website traffic by 35% in 6 months.
+- Managed a monthly social media ad budget of $5,000 across Facebook, Instagram, and LinkedIn, achieving a 4.2x ROAS.
+- Collaborated with graphic designers to create newsletters, improving email open rates by 18% through A/B testing subject lines.
+- Monitored web traffic analytics, compiling monthly performance reports for stakeholders.
+
+Marketing & Content Coordinator
+Apex Retail Group | Sep 2021 - Feb 2023
+- Drafted engaging blog articles, social posts, and product copy, enhancing brand tone consistency.
+- Maintained the company website using WordPress, uploading media resources and modifying simple HTML headers.
+- Set up automated email sequences using Mailchimp, nurturing leads and driving repeat sales.
+- Assisted in coordinating offline promotional events and vendor relations.
+
+TECHNICAL & SOFT SKILLS
+- Marketing Tools: Google Analytics, Google Ads, Mailchimp, HubSpot, SEMrush, Canva
+- Content Platforms: WordPress, Shopify, Squarespace, Medium
+- Base Tech Skills: Basic HTML5, Basic CSS, Microsoft Excel, Google Sheets
+- Professional Skills: Content Strategy, Copywriting, SEO & SEM, Social Media Advertising, A/B Testing, Team Collaboration
+
+EDUCATION
+Bachelor of Arts in Communication & Media Studies
+State University | 2017 - 2021

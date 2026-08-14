@@ -1,0 +1,30 @@
+{
+  "candidate_name": "Jane Smith",
+  "email": "jane.smith@marketingmail.net",
+  "skills": [
+    "HTML",
+    "CSS",
+    "Google Analytics",
+    "HubSpot",
+    "SEO",
+    "Mailchimp",
+    "WordPress"
+  ],
+  "education": "Bachelor of Arts in Communication & Media Studies, State University",
+  "years_of_experience": 3.0,
+  "relevant_experience": "Managed SEO, social media budgets, and email automation campaigns. Basic HTML/CSS maintenance on WordPress site.",
+  "job_role_match_score": 25,
+  "skill_match_score": 40,
+  "overall_candidate_score": 35,
+  "strengths": [
+    "Strong marketing, copywriting, and analytics background.",
+    "Familiar with basic web content layout (WordPress, HTML/CSS)."
+  ],
+  "missing_requirements": [
+    "Lacks required core programming skills (React, TypeScript, JavaScript, HTML, CSS, State Management, Redux, Context API).",
+    "Does not meet technical systems engineering experience requirements."
+  ],
+  "decision": "Reject",
+  "reason_for_recommendation": "Candidate score (35%) is below the shortlist threshold of 80%. Background is focused on digital marketing and campaign management rather than professional software engineering in this domain.",
+  "personalized_email_draft": "Subject: Application Update: Senior React Developer - Jane Smith\n\nHi Jane,\n\nThank you for your interest in the Senior React Developer role. We appreciate you taking the time to apply and share your experience.\n\nWhile your background in Digital Marketing, SEO, and social media is impressive, we are currently prioritizing candidates with deeper technical experience in the required stacks (such as React, TypeScript, JavaScript) and meeting our minimum experience requirements.\n\nWe will keep your resume on file for future marketing or coordination roles that align better with your skills. We wish you the very best in your search!\n\nBest regards,\nRecruitment Team"
+}
